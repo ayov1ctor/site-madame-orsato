@@ -46,35 +46,33 @@
         </section>
 
         <!-- SEÇÃO 2: AS CARTINHAS DE BARALHO -->
-        <section class="cards-section">
-            <h2>Cartas de Amor do País das Maravilhas</h2>
-            <p>Clique em uma carta para revelar seus segredos...</p>
-            <div class="cards-container">
-                <div class="card" onclick="openCard(1)">🃏 Carta de Copas</div>
-                <div class="card" onclick="openCard(2)">⏳ Carta do Tempo</div>
-                <div class="card" onclick="openCard(3)">💀 Festa no Céu</div>
-            </div>
-            
-            <!-- Modal para exibir a carta aberta -->
-            <div id="card-modal" class="modal" onclick="closeModal()">
-                <div class="modal-content" onclick="event.stopPropagation()">
-                    <span class="close-button" onclick="closeModal()">&times;</span>
-                    <p id="modal-text">Mensagem secreta...</p>
-                </div>
-            </div>
-        </section>
+        <section class="love-letters-section">
+    <h2>💌 Cartas de Amor Mágicas 💌</h2>
+    <p class="subtitle">Selecione uma das cartas para ler o que o destino reservou:</p>
+    
+    <div class="letters-container">
+        <button class="letter-btn" onclick="showLoveLetter('copas')">♥️ Cartas de Copas</button>
+        <button class="letter-btn" onclick="showLoveLetter('tempo')">⏳ Cartas do Tempo</button>
+        <button class="letter-btn" onclick="showLoveLetter('festa')">🌅 Festa no Céu</button>
+    </div>
+
+    <div id="love-letter-box" style="display: none; margin-top: 25px; padding: 20px; background: rgba(255, 255, 255, 0.05); border: 1px dashed #ffd700; border-radius: 10px; animation: fadeIn 0.5s ease-in-out;">
+        <p id="love-letter-text" style="font-size: 1.1rem; font-style: italic; color: #fff; line-height: 1.6;"></p>
+    </div>
+</section>
 
         <!-- SEÇÃO 3: JARDIM DE PRESENTES -->
         <section class="garden-section">
             <h2>O Jardim de Calêndulas e Rosas</h2>
             <p>Cultive o nosso jardim e ganhe mimos!</p>
             <div class="garden-buttons">
-                <button onclick="growGift('flower')">🌹 Pintar Rosas de Vermelho</button>
-                <button onclick="growGift('marigold')">🌼 Colher Calêndula (Festa no Céu)</button>
-                <button onclick="growGift('present')">🎁 Abrir Caixa Surpresa</button>
-            </div>
-            <div id="garden-display"></div>
-        </section>
+                <button onclick="receiveGift('flower')">🌹 Colher Rosa</button>
+<button onclick="receiveGift('marigold')">🌼 Colher Calêndula</button>
+<button onclick="receiveGift('present')">🎁 Abrir Presente</button>
+
+<div id="gift-result-box" style="display: none; margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid #ffd700;">
+    <p id="gift-result-text" style="color: #fff; font-weight: bold;"></p>
+</div>
     <!-- BOTÃO PARA IR PARA OS JOGOS -->
 <section style="text-align: center; border: 2px solid #ffd700;">
     <h2>Quer jogar um jogo?</h2>
