@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para a Madame Orsato</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fontes mágicas do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Efeito de pétalas/estrelas caindo ao fundo -->
+    <div id="particles-container"></div>
+
+    <header>
+        <h1>Para a madame Orsato</h1>
+        <p class="subtitle">Um pedaço do País das Maravilhas e do Além, só para você.</p>
+    </header>
+    <!-- PAINEL PARA ALTERAR O CENÁRIO DE FUNDO -->
+    <section class="theme-selector">
+        <h2>✨ Escolha o seu Cenário Atual ✨</h2>
+        <button class="theme-btn" onclick="changeBackground('starry')">🌌 Céu Estrelado</button>
+        <button class="theme-btn" onclick="changeBackground('alice')">🍄 Jardim de Alice</button>
+        <button class="theme-btn" onclick="changeBackground('sunset')">🌅 Pôr do Sol (Festa no Céu)</button>
+        <button class="theme-btn" onclick="changeBackground('cats')">🐾 Fundo de Gatinhos</button>
+    </section>
+    <main>
+        <!-- SEÇÃO 1: LINHA DO TEMPO -->
+        <section class="timeline-section">
+            <h2>Nossa Linha do Tempo Mágica</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="date">24 de Maio</div>
+                    <div class="event">Nossa primeira conversa ✨</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">30 de Maio</div>
+                    <div class="event">A primeira vez que nos vimos 👁️✨</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="date">06 de Junho</div>
+                    <div class="event">A primeira vez que nos beijamos 💋❤️</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: AS CARTINHAS DE BARALHO -->
+        <section class="cards-section">
+            <h2>Cartas de Amor do País das Maravilhas</h2>
+            <p>Clique em uma carta para revelar seus segredos...</p>
+            <div class="cards-container">
+                <div class="card" onclick="openCard(1)">🃏 Carta de Copas</div>
+                <div class="card" onclick="openCard(2)">⏳ Carta do Tempo</div>
+                <div class="card" onclick="openCard(3)">💀 Festa no Céu</div>
+            </div>
+            
+            <!-- Modal para exibir a carta aberta -->
+            <div id="card-modal" class="modal" onclick="closeModal()">
+                <div class="modal-content" onclick="event.stopPropagation()">
+                    <span class="close-button" onclick="closeModal()">&times;</span>
+                    <p id="modal-text">Mensagem secreta...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: JARDIM DE PRESENTES -->
+        <section class="garden-section">
+            <h2>O Jardim de Calêndulas e Rosas</h2>
+            <p>Cultive o nosso jardim e ganhe mimos!</p>
+            <div class="garden-buttons">
+                <button onclick="growGift('flower')">🌹 Pintar Rosas de Vermelho</button>
+                <button onclick="growGift('marigold')">🌼 Colher Calêndula (Festa no Céu)</button>
+                <button onclick="growGift('present')">🎁 Abrir Caixa Surpresa</button>
+            </div>
+            <div id="garden-display"></div>
+        </section>
+    <!-- BOTÃO PARA IR PARA OS JOGOS -->
+<section style="text-align: center; border: 2px solid #ffd700;">
+    <h2>Quer jogar um jogo?</h2>
+    <p style="margin-bottom: 20px;">Preparei um espaço com desafios românticos para você!</p>
+    <a href="jogos.html"><button style="font-size: 1.2rem; padding: 15px 30px;">✨ Entrar no Salão de Jogos ✨</button></a>
+</section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
