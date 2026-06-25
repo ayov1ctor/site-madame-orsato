@@ -229,3 +229,456 @@ function saveGardenImage() {
 }
 
 carregarSugestoes();
+// ==========================================
+// JOGO 5: O LABIRINTO DO TEMPO E SORRISOS
+// ==========================================
+
+let aliceCurrentStage = 1;
+let catPathSelected = [];
+const correctCatPath = [2, 0, 3, 1]; // O caminho correto pelas ilusões do Gato
+
+function loadAliceStage() {
+    const zone = document.getElementById('alice-game-zone');
+    const progress = document.getElementById('alice-progress');
+    const feedback = document.getElementById('alice-feedback');
+    feedback.innerText = "";
+
+    if (aliceCurrentStage === 1) {
+        progress.innerText = "Fase 1: O Relógio de Engrenagens do Coelho ⏳";
+        zone.innerHTML = `
+            <p style="font-size: 0.95rem; margin-bottom: 15px;">O Coelho Branco quebrou seu relógio de bolso principal. Para consertá-lo, as engrenagens precisam somar o valor exato do tempo perdido. Descubra a lógica:</p>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; font-family: monospace; margin-bottom: 15px;">
+                Engrenagem A (Horas) = 7 <br>
+                Engrenagem B (Minutos) = A x 3 - 5 <br>
+                Engrenagem C (Segundos) = (B + A) / 2 <br><br>
+                <b>Código de Ativação do Relógio = (A + B) x C</b>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                <input type="number" id="gear-input" placeholder="Digite o Código..." style="padding: 10px; border-radius: 5px; border: 1px solid #ba68c8; background: #111; color: #fff; text-align: center; width: 220px;">
+                <div>
+                    <button onclick="verifyStage1()" style="background: #ba68c8; padding: 10px 20px;">Encaixar Engrenagens</button>
+                    <button onclick="openHatterTip()" style="background: rgba(255, 215, 0, 0.2); border: 1px solid #ffd700; color: #ffd700; margin-left: 10px; padding: 10px 15px; border-radius: 20px; font-size: 0.85rem; cursor: pointer;">💡 Pedir Dica</button>
+                </div>
+            </div>
+        `;
+    }
+    else if (aliceCurrentStage === 2) {
+        progress.innerText = "Fase 2: As Ilusões do Gato de Cheshire 🐱🐾";
+        catPathSelected = [];
+        zone.innerHTML = `
+            <p style="font-size: 0.95rem; margin-bottom: 15px;">O Gato Sorridente se dividiu em 4 caminhos flutuantes. Três caminhos somem no ar e te jogam no início. Apenas a sequência exata das pegadas revela o caminho real!</p>
+            <p style="font-size: 0.85rem; color: #ea80fc; font-style: italic; margin-bottom: 15px;">Dica do Sorriso: "O terceiro vem primeiro, o segundo vem por último, e o quarto fica antes do segundo."</p>
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button onclick="chooseCatPath(0)" class="path-btn" style="background: rgba(186, 104, 200, 0.2); width: 100px;">Caminho 1</button>
+                <button onclick="chooseCatPath(1)" class="path-btn" style="background: rgba(186, 104, 200, 0.2); width: 100px;">Caminho 2</button>
+                <button onclick="chooseCatPath(2)" class="path-btn" style="background: rgba(186, 104, 200, 0.2); width: 100px;">Caminho 3</button>
+                <button onclick="chooseCatPath(3)" class="path-btn" style="background: rgba(186, 104, 200, 0.2); width: 100px;">Caminho 4</button>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.85rem; color: #aaa;">Sua sequência atual: <span id="current-path-view">-</span></p>
+        `;
+    } 
+    else if (aliceCurrentStage === 3) {
+        progress.innerText = "Fase 3: O Paradoxo do Amor Eterno 🗝️🪞";
+        zone.innerHTML = `
+            <p style="font-size: 0.95rem; margin-bottom: 15px;">Você cruzou o tempo e as ilusões. Agora, diante do espelho do País das Maravilhas, o cadeado final pede a resposta para o maior mistério de todos.</p>
+            <p style="font-size: 0.9rem; color: #ffd700; font-weight: bold; margin-bottom: 15px;">"Quem é a única pessoa capaz de fazer o tempo parar e o sorriso mais lindo deste mundo aparecer?"</p>
+            <input type="text" id="final-alice-input" placeholder="Digite o nome dela aqui..." style="padding: 10px; border-radius: 20px; border: 1px solid #ffd700; background: #111; color: #fff; text-align: center; width: 250px;">
+            <button onclick="verifyStage3()" style="margin-left: 10px; background: #27ae60; color: white;">Decifrar Destino</button>
+        `;
+    } 
+    else if (aliceCurrentStage === 4) {
+        progress.innerText = "❤️ O Labirinto Foi Vencido! ❤️";
+        zone.style.textAlign = "left";
+        zone.style.lineHeight = "1.8";
+        zone.innerHTML = `
+            <h3 style="color: #ffd700; text-align: center; margin-bottom: 15px;">✨ A História de Amor Além do Espelho ✨</h3>
+            <p>O Coelho Branco correu o mundo inteiro, cruzou os ponteiros do tempo e descobriu que nenhuma engrenagem corre mais rápido do que a batida do meu coração quando te vê. O Gato Sorridente admitiu que todas as suas ilusões e truques perdem a graça perto do brilho real e encantador do seu sorriso.</p>
+            <p>Seja no País das Maravilhas, no Além de Festa no Céu, ou em qualquer realidade paralela, nosso amor não é um quebra-cabeça confuso ou um jogo de pressa. Ele é o lugar seguro onde o tempo escolhe parar, onde o impossível ganha forma e onde eu escolho estar, todos os dias, segurando a sua mão.</p>
+            <p style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-top: 20px; color: #ea80fc;">Obrigado por ser a minha melhor aventura! 🥰💍</p>
+        `;
+    }
+}
+
+// Validação da Fase 1 (Matemática: A=7, B=16, C=11.5 -> (7+16)*11.5 = 264.5, arredondando lógica para 264)
+function verifyStage1() {
+    const val = document.getElementById('gear-input').value;
+    const feedback = document.getElementById('alice-feedback');
+    if (parseInt(val) === 264 || parseInt(val) === 265) {
+        feedback.style.color = "#27ae60";
+        feedback.innerText = "✨ Click! As engrenagens giraram e o relógio voltou a funcionar! Avançando...";
+        setTimeout(() => {
+            aliceCurrentStage = 2;
+            loadAliceStage();
+        }, 2000);
+    } else {
+        feedback.style.color = "#ff4a4a";
+        feedback.innerText = "O relógio travou! O tempo está correndo errado, refaça as contas.";
+    }
+}
+
+// Validação da Fase 2 (Sequência lógica do Gato)
+function chooseCatPath(pathNum) {
+    const feedback = document.getElementById('alice-feedback');
+    catPathSelected.push(pathNum);
+    
+    document.getElementById('current-path-view').innerText = catPathSelected.map(p => p + 1).join(" → ");
+
+    // Verifica se errou o passo atual da sequência
+    const currentStepIndex = catPathSelected.length - 1;
+    if (catPathSelected[currentStepIndex] !== correctCatPath[currentStepIndex]) {
+        feedback.style.color = "#ff4a4a";
+        feedback.innerText = "🐱 *Puff!* O Gato sumiu e o caminho desapareceu! Recomece o labirinto.";
+        setTimeout(() => {
+            catPathSelected = [];
+            loadAliceStage();
+        }, 1500);
+        return;
+    }
+
+    // Se completou os 4 passos certos
+    if (catPathSelected.length === 4) {
+        feedback.style.color = "#27ae60";
+        feedback.innerText = "🐱 O Gato sorriu por inteiro e revelou o espelho secreto! Avançando para o portal final...";
+        setTimeout(() => {
+            aliceCurrentStage = 3;
+            loadAliceStage();
+        }, 2000);
+    }
+}
+
+// Validação da Fase 3 (O nome dela)
+function verifyStage3() {
+    const input = document.getElementById('final-alice-input').value.toLowerCase().trim();
+    const feedback = document.getElementById('alice-feedback');
+
+    if (input.length > 2) { // Aceita o nome dela desde que digitado
+        feedback.style.color = "#27ae60";
+        feedback.innerText = "🔓 O espelho se quebrou em mil pétalas! O segredo do universo foi revelado...";
+        setTimeout(() => {
+            aliceCurrentStage = 4;
+            loadAliceStage();
+        }, 2000);
+    } else {
+        feedback.style.color = "#ff4a4a";
+        feedback.innerText = "O espelho continua embaçado. O amor exige o nome real da dona dele.";
+    }
+}
+
+// Inicia o jogo assim que a página carrega
+loadAliceStage();
+// CONTROLE DA INTERVENÇÃO DO CHAPELEIRO MALUCO
+function openHatterTip() {
+    const modal = document.getElementById('hatter-tip-modal');
+    const text = document.getElementById('hatter-text');
+    
+    // Seu recado carinhoso provocando ela e dando a resposta mastigada pelo Chapeleiro
+    text.innerHTML = `
+        "Lindinha! Eu já sabia que você faria biquinho e se perderia um pouco nesses cáuculos, então deixei um aliado de prontidão para te salvar! 😉<br><br>
+        O Chapeleiro Maluco tomou um gole de chá, fez os cálculos malucos dele e sussurrou no meu ouvido: <br><br>
+        <b>A engrenagem B vale 16 e a C vale 11.5. Multiplicando tudo direitinho, o código final que abre o relógio é exatamente <span style='color:#ffd700; font-size:1.2rem;'>264</span>!</b><br><br>
+        Digita lá e vamos continuar nossa jornada pelo labirinto!"
+    `;
+    
+    modal.classList.add('active');
+}
+
+function closeHatterTip() {
+    document.getElementById('hatter-tip-modal').classList.remove('active');
+}
+// ... Todo o resto do seu código antigo dos jogos anteriores fica aqui para cima ...
+
+// ==========================================
+// JOGO 5: O LABIRINTO DO TEMPO E SORRISOS
+// ==========================================
+aliceCurrentStage = 1;
+catPathSelected = [];
+// correctCatPath = [2, 0, 3, 1];
+// ... (resto das funções da fase da Alice) ...
+
+// CONTROLE DA INTERVENÇÃO DO CHAPELEIRO MALUCO (DICA FASE 1)
+window.openHatterTip = function() {
+    const modal = document.getElementById('hatter-tip-modal');
+    const text = document.getElementById('hatter-text');
+    
+    if (modal && text) {
+        text.innerHTML = `
+            "Lindinha! Eu já sabia que você faria biquinho e se perderia nessas continhas, então deixei um aliado de prontidão para te salvar! 😉<br><br>
+            O Chapeleiro Maluco tomou um gole de chá, fez os cálculos malucos dele e sussurrou no meu ouvido: <br><br>
+            <b>A engrenagem B vale 16 e a C vale 11.5. Multiplicando tudo direitinho, o código final que abre o relógio é exatamente <span style='color:#ffd700; font-size:1.2rem;'>264</span>!</b><br><br>
+            Digita lá e vamos continuar nossa jornada pelo labirinto!"
+        `;
+        modal.classList.add('active');
+    } else {
+        console.error("Modal ou texto da dica não foram encontrados no HTML.");
+    }
+};
+
+window.closeHatterTip = function() {
+    const modal = document.getElementById('hatter-tip-modal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+};
+// ==========================================
+// ANIMAÇÕES ESPECIAIS DO GATO DE CHESHIRE (FASE 5)
+// ==========================================
+const hatterSection = document.getElementById('enigma-alice-section');
+const catFace = document.getElementById('cheshire-interactive-face');
+const pupilL = document.getElementById('cat-pupil-l');
+const pupilR = document.getElementById('cat-pupil-r'); // <-- Corrigido para R maiúsculo
+
+if (hatterSection && catFace) {
+    hatterSection.addEventListener('mousemove', (e) => {
+        const rect = hatterSection.getBoundingClientRect();
+        
+        // Posição do mouse relativa ao centro da seção do jogo
+        const mouseX = e.clientX - rect.left - (rect.width / 2);
+        const mouseY = e.clientY - rect.top - (rect.height / 2);
+        
+        // Limita a inclinação do rosto para um efeito sutil 3D
+        const angleX = (mouseY / rect.height) * 25; 
+        const angleY = (mouseX / rect.width) * 25;
+        
+        catFace.style.transform = `translate(${-angleY * 0.4}px, ${-angleX * 0.4}px) rotateX(${-angleX}deg) rotateY(${angleY}deg)`;
+        
+        // Desloca as pupilas para dar o efeito de olhar direcionado
+        const pupilX = (mouseX / rect.width) * 5;
+        const pupilY = (mouseY / rect.height) * 4;
+        
+        if (pupilL && pupilR) {
+            pupilL.setAttribute('cx', 30 + pupilX);
+            pupilL.setAttribute('cy', 30 + pupilY);
+            pupILR = pupilR.setAttribute('cx', 70 + pupilX);
+            pupilR.setAttribute('cy', 30 + pupilY);
+        }
+    });
+
+    hatterSection.addEventListener('mouseleave', () => {
+        // Adicione ou mude apenas esta linha dentro do evento de movimento do mouse:
+catFace.style.transform = `translate(${-angleY * 0.5}px, ${(-angleX * 0.5) + (window.scrollY * 0.15)}px) rotateX(${-angleX}deg) rotateY(${angleY}deg)`;
+        if (pupilL && pupilR) {
+            pupilL.setAttribute('cx', 30); pupilL.setAttribute('cy', 30);
+            pupilR.setAttribute('cx', 70); pupilR.setAttribute('cy', 30);
+        }
+    });
+}
+
+// Sistema de Patinhas Fantasmas andando pelo cenário
+function spawnCatPaws() {
+    if (!hatterSection) return;
+    // Só gera patinhas se a seção do jogo estiver visível na tela
+    if (hatterSection.getBoundingClientRect().top > window.innerHeight || hatterSection.getBoundingClientRect().bottom < 0) return;
+
+    const rect = hatterSection.getBoundingClientRect();
+    let startX = Math.random() * (rect.width - 100) + 50;
+    let startY = Math.random() * (rect.height - 100) + 50;
+    
+    const randomRotation = Math.floor(Math.random() * 360);
+
+    for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+            const paw = document.createElement('div');
+            paw.classList.add('cat-paw-print');
+            paw.innerHTML = '🐾';
+            
+            const stepX = startX + (i * 25 * Math.cos(randomRotation * Math.PI / 180));
+            const stepY = startY + (i * 25 * Math.sin(randomRotation * Math.PI / 180));
+            
+            paw.style.left = stepX + 'px';
+            paw.style.top = stepY + 'px';
+            paw.style.setProperty('--paw-rot', `${randomRotation + 90}deg`);
+
+            hatterSection.appendChild(paw);
+
+            setTimeout(() => paw.remove(), 2500);
+        }, i * 400);
+    }
+
+// ==========================================
+// MOTOR DE MOVIMENTO: CAMINHADA TOTALMENTE LIVRE NO FUNDO
+// ==========================================
+const catContainer = document.getElementById('cheshire-interactive-face');
+const pupilLeft = document.getElementById('cat-pupil-l');
+const pupilRight = document.getElementById('cat-pupil-r');
+
+// Força o contêiner a iniciar no zero absoluto da tela para o cálculo não quebrar
+if (catContainer) {
+    catContainer.style.left = '0px';
+    catContainer.style.top = '45vh';
+}
+
+let catPosX = 10;
+let catSpeedX = 1.2; 
+let walkingDirection = 1; 
+let mouseXGlobal = 0;
+let mouseYGlobal = 0;
+
+window.addEventListener('mousemove', (e) => {
+    if (!catContainer) return;
+    const rect = catContainer.getBoundingClientRect();
+    mouseXGlobal = e.clientX - rect.left - (rect.width / 2);
+    mouseYGlobal = e.clientY - rect.top - (rect.height / 2);
+});
+
+function walkCheshireCat() {
+    if (!catContainer) return;
+
+    // Faz o gato andar de acordo com a direção atual
+    catPosX += catSpeedX * walkingDirection;
+
+    // Pegamos a largura real da tela de ponta a ponta
+    const larguraRealTela = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const limiteDireito = larguraRealTela - 170; // Desconto do corpinho dele
+
+    // Se bater na borda direita real do monitor, vira para a esquerda
+    if (catPosX >= limiteDireito) {
+        catPosX = limiteDireito;
+        walkingDirection = -1;
+    } 
+    // Se bater na borda esquerda real do monitor, vira para a direita
+    else if (catPosX <= 10) {
+        catPosX = 10;
+        walkingDirection = 1;
+    }
+
+    // Define o espelhamento do rosto (1 olha para a direita, -1 olha para a esquerda)
+    const virarRosto = walkingDirection === 1 ? 1 : -1;
+
+   // Aplica o movimento e a inversão perfeitamente usando apenas propriedades 2D estáveis
+    catContainer.style.transform = `translate3d(${catPosX}px, 0px, 0px) scaleX(${virarRosto})`;
+    // Movimentação das pupilas olhando pro mouse
+    if (pupilLeft && pupilRight) {
+        const pX = Math.max(-4, Math.min(4, (mouseXGlobal / larguraRealTela) * 8));
+        const pY = Math.max(-3, Math.min(3, (mouseYGlobal / window.innerHeight) * 6));
+        const directionFix = walkingDirection === 1 ? 1 : -1;
+        
+        pupilLeft.setAttribute('cx', 33 + (pX * directionFix));
+        pupilLeft.setAttribute('cy', 40 + pY);
+        pupilRight.setAttribute('cx', 67 + (pX * directionFix));
+        pupilRight.setAttribute('cy', 40 + pY);
+    }
+
+    requestAnimationFrame(walkCheshireCat);
+}
+
+// Inicializa a caminhada no plano de fundo
+if (catContainer) {
+    requestAnimationFrame(walkCheshireCat);
+}
+}
+// ==========================================
+// JOGO 6: LÓGICA UNIFICADA E BLINDADA
+// ==========================================
+(function() { // Usamos uma IIFE para isolar as variáveis e evitar conflitos
+    const phrase = "Qual a semelhança entre um corvo e uma escrivaninha?";
+    let index = 0;
+    let typewriterStarted = false;
+
+    // 1. Efeito Typewriter
+    function type() {
+        const textSpan = document.getElementById('riddle-text');
+        if (textSpan && index < phrase.length) {
+            textSpan.innerHTML += phrase.charAt(index);
+            index++;
+            setTimeout(type, 60);
+        }
+    }
+
+    // Inicia quando a seção do Jogo 6 aparecer na tela (Otimização)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !typewriterStarted) {
+                typewriterStarted = true;
+                setTimeout(type, 500);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    const target = document.getElementById('enigma-hatter-section');
+    if (target) observer.observe(target);
+
+    // 2. Sistema de Fogos (Canvas)
+    const canvas = document.getElementById('fireworks-canvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+    let p_list = [];
+
+    function res() {
+        if (canvas && canvas.parentElement) {
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+        }
+    }
+
+    function create() {
+        if (!ctx) return;
+        res();
+        const colors = ['#00e5ff', '#ff007f', '#9b5de5', '#fee440'];
+        for (let i = 0; i < 150; i++) {
+            p_list.push({
+                x: canvas.width / 2, y: canvas.height / 2,
+                r: Math.random() * 3 + 1, c: colors[Math.floor(Math.random() * colors.length)],
+                s: Math.random() * 6 + 2, a: Math.random() * Math.PI * 2,
+                f: 0.95, g: 0.12, o: 1, d: Math.random() * 0.02 + 0.01
+            });
+        }
+        if (p_list.length > 0) anim();
+    }
+
+    function anim() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        p_list.forEach((p, i) => {
+            p.s *= p.f;
+            p.x += Math.cos(p.a) * p.s;
+            p.y += Math.sin(p.a) * p.s + p.g;
+            p.o -= p.d;
+            ctx.globalAlpha = p.o;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.c; ctx.fill();
+            if (p.o <= 0) p_list.splice(i, 1);
+        });
+        if (p_list.length > 0) requestAnimationFrame(anim);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // 3. Verificação (Definida globalmente para o onclick funcionar)
+    window.checkGame6Answer = function() {
+        const inpt = document.getElementById('game6-input');
+        const fb = document.getElementById('game6-feedback');
+        const cont = document.getElementById('game6-content');
+        
+        if (!inpt || !fb || !cont) return;
+
+        const answer = inpt.value.trim().toLowerCase();
+
+        if (answer === "fora cabeçuda") {
+            fb.style.color = "#00e5ff";
+            fb.innerHTML = "🎯 CORRETO! PREPARE-SE...";
+            
+            cont.style.transition = "all 0.6s ease";
+            cont.style.transform = "scale(0) rotate(10deg)";
+            cont.style.opacity = "0";
+
+            setTimeout(() => {
+                cont.style.display = "none";
+                create(); // Chama a explosão
+                
+                setTimeout(() => {
+                    document.getElementById('enigma-hatter-section').innerHTML = `
+                        <div style="text-align: center; padding: 40px; animation: blink 1s ease; position: relative; z-index: 20;">
+                            <h1 style="color: #ffd700; font-size: 3rem; text-shadow: 0 0 20px #ffd700; margin: 0;">👑 VITÓRIA!</h1>
+                            <p style="color: #fff; font-size: 1.3rem; margin-top: 20px;">Você decifrou o enigma, derrotou a Rainha e escapou do Labirinto!</p>
+                        </div>
+                    `;
+                }, 1200);
+            }, 600);
+        } else {
+            fb.style.color = "#ff3333";
+            fb.innerHTML = "❌ O Chapeleiro riu... tente novamente!";
+            inpt.style.border = "1px solid #ff3333";
+            setTimeout(() => inpt.style.border = "1px solid #00e5ff", 1000);
+        }
+    };
+})();
+// Ativa o ciclo das patinhas a cada 6 segundos
+setInterval(spawnCatPaws, 6000);

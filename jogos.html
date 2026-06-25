@@ -130,6 +130,87 @@
             padding: 8px 12px; 
             font-weight: 500; 
         }
+        /* ==========================================
+           MODAL E ANIMAÇÃO 3D DO CHAPELEIRO
+           ========================================== */
+        .hatter-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .hatter-modal.active {
+            opacity: 1; pointer-events: auto;
+        }
+        .hatter-content {
+            background: linear-gradient(135deg, #2c1a4d, #140d26);
+            border: 2px solid #ba68c8;
+            padding: 30px; border-radius: 20px; width: 90%; max-width: 450px;
+            text-align: center; box-shadow: 0 0 30px rgba(186, 104, 200, 0.5);
+            transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hatter-modal.active .hatter-content {
+            transform: scale(1);
+        }
+        /* Efeito do Chapéu 3D balançando */
+        .hatter-avatar-3d {
+            font-size: 70px; margin-bottom: 10px;
+            display: inline-block;
+            animation: float3D 3s ease-in-out infinite alternate;
+            perspective: 500px;
+        }
+        @keyframes float3D {
+            0% { transform: translateY(0) rotateY(-15deg) rotateX(10deg); filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+            100% { transform: translateY(-15px) rotateY(15deg) rotateX(-5deg); filter: drop-shadow(0 20px 15px rgba(186, 104, 200, 0.4)); }
+        }
+        /* ==========================================
+           EFEITOS VISUAIS DO GATO DE CHESHIRE (FASE 5)
+           ========================================== */
+        /* Recipiente do jogo para permitir elementos absolutos dentro */
+        #enigma-alice-section {
+            position: relative;
+            overflow: hidden;
+        }
+       /* O GATO FLUTUANTE NO FUNDO (Mude para este bloco) */
+        .cheshire-bg-cat {
+            .cheshire-bg-cat {
+            position: fixed !important;
+            width: 160px !important; 
+            height: 140px !important;
+            display: block !important;
+            visibility: visible !important;
+            pointer-events: none !important;
+            opacity: 0.7 !important;
+            z-index: 99999 !important;
+            /* Deixamos sem top, left ou transform para o JS dominar */
+        }
+        }
+        /* As Patinhas que andam (Agora bem maiores!) */
+        .cat-paw-print {
+            position: absolute;
+            font-size: 38px; /* Aumentado de 18px para 38px para ficarem bem visíveis */
+            color: #ba68c8;
+            text-shadow: 0 0 10px rgba(186, 104, 200, 0.9);
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: pawFade 1.0s forwards ease-in-out;
+            z-index: 0;
+        }
+
+
+        @keyframes pawFade {
+            0% { opacity: 0; transform: scale(0.5) rotate(var(--paw-rot, 0deg)); }
+            15% { opacity: 0.7; transform: scale(1) rotate(var(--paw-rot, 0deg)); }
+            80% { opacity: 0.4; }
+            100% { opacity: 0; transform: scale(0.8) rotate(var(--paw-rot, 0deg)); }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -207,8 +288,86 @@
         <center>
             <a href="index.html" class="back-link">← Voltar para a Página Inicial</a>
         </center>
+        <section class="game-box" id="enigma-alice-section" style="border: 2px solid #ba68c8; background: rgba(186, 104, 200, 0.03);">
+        <section class="game-box" id="enigma-alice-section" style="border: 2px solid #ba68c8; background: rgba(186, 104, 200, 0.03); position: relative;">
+            <h2>🪞 Jogo 5: O Labirinto do Tempo e Sorrisos</h2>
+            <p class="subtitle" style="color: #ea80fc;">Desvende as ilusões do Gato e conserte o Relógio do Coelho para destravar a história eterna.</p>
+            
+            <div style="margin: 15px 0; font-size: 0.9rem; color: #b3e5fc;">
+                Progresso no Labirinto: <span id="alice-progress">Fase 1 de 3</span>
+            </div>
+
+            <div id="alice-game-zone" style="min-height: 200px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 10px; margin: 20px 0;">
+                </div>
+
+            <p id="alice-feedback" style="font-weight: bold; min-height: 24px; margin: 10px 0;"></p>
+        </section>
+        <section class="game-box" id="enigma-hatter-section" style="border: 2px solid #00e5ff; background: rgba(0, 229, 255, 0.03); position: relative; overflow: hidden; margin-top: 30px; padding: 25px; border-radius: 8px;">
+            <canvas id="fireworks-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></canvas>
+            
+            <div id="game6-content">
+                <h2 style="color: #00e5ff; text-shadow: 0 0 10px rgba(0,229,255,0.5);">🎩 Jogo 6: O Enigma do Chapeleiro</h2>
+                
+                <div class="riddle-display" style="background: rgba(0, 0, 0, 0.6); border-left: 4px solid #00e5ff; padding: 20px; margin: 20px 0; min-height: 60px; font-family: 'Courier New', Courier, monospace; font-size: 1.2rem; color: #fff; line-height: 1.5;">
+                    <span id="riddle-text"></span><span class="cursor" style="animation: blink 0.7s infinite;">|</span>
+                </div>
+
+                <div class="input-group" style="margin-top: 20px;">
+                    <input type="text" id="game6-input" placeholder="Digite sua resposta aqui..." style="padding: 12px; width: 250px; background: #111; border: 1px solid #00e5ff; color: #fff; border-radius: 4px; font-size: 1rem; outline: none;">
+                    <button onclick="checkGame6Answer()" style="padding: 12px 24px; background: #00e5ff; border: none; color: #000; font-weight: bold; border-radius: 4px; cursor: pointer; margin-left: 10px; transition: all 0.3s;">Decifrar</button>
+                </div>
+                <p id="game6-feedback" style="margin-top: 15px; font-weight: bold; min-height: 20px;"></p>
+            </div>
+        </section>
     </main>
 
     <script src="jogos.js"></script>
+    <!-- JANELA FLUTUANTE DA DICA DO CHAPELEIRO -->
+    <div id="hatter-tip-modal" class="hatter-modal">
+        <div class="hatter-content">
+            <div class="hatter-avatar-3d">🎩✨</div>
+            <h3 style="color: #ffd700; font-family: 'Cinzel Decorative', cursive; margin-bottom: 15px;">O Chapeleiro Intervém!</h3>
+            <p id="hatter-text" style="font-size: 1rem; color: #f3e9dc; line-height: 1.6; margin-bottom: 20px; text-align: left;"></p>
+            <button onclick="closeHatterTip()" style="background: #ba68c8; color: white; padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; border: none;">Voltar ao Relógio</button>
+        </div>
+    </div>
+    <div class="cheshire-bg-cat" id="cheshire-interactive-face">
+                <svg viewBox="0 0 100 90" width="100%" height="100%">
+                    <defs>
+                        <linearGradient id="fur-pattern" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00bcd4" />
+                            <stop offset="50%" stop-color="#263238" />
+                            <stop offset="100%" stop-color="#00e5ff" />
+                        </linearGradient>
+                        <filter id="neon-glow">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+                    
+                    <g>
+                        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-6; 0,0" dur="3s" repeatCount="indefinite" ease-in-out />
+                        
+                        <path d="M10,25 C5,5 22,12 32,18 Z" fill="#37474f"/>
+                        <path d="M12,23 C8,9 20,15 28,19 Z" fill="#00bcd4" opacity="0.6"/>
+                        <path d="M90,25 C95,5 78,12 68,18 Z" fill="#37474f"/>
+                        <path d="M88,23 C92,9 80,15 72,19 Z" fill="#00bcd4" opacity="0.6"/>
+                        <path d="M15,30 Q5,45 15,60 Q30,80 50,80 Q70,80 85,60 Q95,45 85,30 Q50,15 15,30 Z" fill="#263238"/>
+                        <path d="M20,35 Q35,32 50,38 Q65,32 80,35 Q50,45 20,35 Z" fill="url(#fur-pattern)" opacity="0.4"/>
+                        <path d="M12,45 Q25,48 35,45" stroke="#00e5ff" stroke-width="3" fill="none" opacity="0.7"/>
+                        <path d="M88,45 Q75,48 65,45" stroke="#00e5ff" stroke-width="3" fill="none" opacity="0.7"/>
+                        <ellipse cx="33" cy="40" rx="13" ry="10" fill="#00e676" filter="url(#neon-glow)"/>
+                        <ellipse cx="67" cy="40" rx="13" ry="10" fill="#00e676" filter="url(#neon-glow)"/>
+                        <ellipse id="cat-pupil-l" cx="33" cy="40" rx="4" ry="9" fill="#111"/>
+                        <ellipse id="cat-pupil-r" cx="67" cy="40" rx="4" ry="9" fill="#111"/>
+                        <path d="M20,38 Q33,30 46,38" stroke="#111" stroke-width="2" fill="none"/>
+                        <path d="M54,38 Q67,30 80,38" stroke="#111" stroke-width="2" fill="none"/>
+                        <path d="M18,52 Q50,82 82,52 Q50,60 18,52 Z" fill="#ffffff" filter="url(#neon-glow)"/>
+                        <path d="M22,54 Q50,69 78,54" stroke="#37474f" stroke-width="1.5" fill="none"/>
+                        <path d="M30,52 L32,64 M40,53 L41,67 M50,54 L50,69 M60,53 L59,67 M70,52 L68,64" stroke="#90a4ae" stroke-width="1"/>
+                    </g>
+                </svg>
+            </div>
+
 </body>
 </html>

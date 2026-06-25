@@ -230,3 +230,15 @@ section {
         opacity: 0;
     }
 }
+.cheshire-bg-cat {
+            position: fixed !important;
+            width: 160px !important; 
+            height: 140px !important;
+            display: block !important;
+            visibility: visible !important;
+            pointer-events: none !important;
+            opacity: 0.18 !important;
+            z-index: -1 !important;
+            left: 0px !important; /* Força o início no zero absoluto */
+            top: 45vh !important;
+        }
