@@ -330,34 +330,39 @@
             </div>
         </div>
 
-        <div class="editor-container">
-            <div class="toolbar-papel">
-                <label style="font-weight: bold; font-size: 0.95rem; color: #606c38;">Borda Artística:</label>
-                <select id="select-borda" class="select-borda" onchange="mudarEstiloBorda()">
-                    <option value="borda-simples">Margarida Minimalista</option>
-                    <option value="borda-realeza">Realeza Imperial (Linha Dupla)</option>
-                    <option value="borda-vintage">Pergaminho Vintage</option>
-                    <option value="borda-poetica">Tracejado Poético</option>
-                </select>
-
+        <div class="main-content">
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
                 <input type="text" id="titulo-texto" class="input-text" placeholder="Título da Obra..." style="margin-bottom: 0; flex-grow: 1;">
+                
+                <button id="btn-fechar-texto" onclick="fecharTextoAtual()" style="display: none; background: #b7b7a4; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; font-family: 'Georgia', serif; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: background 0.2s;" onmouseover="this.style.background='#a3a380'" onmouseout="this.style.background='#b7b7a4'">✕ Fechar Leitura</button>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-size: 0.85rem; font-family: 'Georgia', serif; color: #606c38;">Moldura:</span>
+                    <select id="seletor-borda" onchange="mudarEstiloBorda(this.value)" style="padding: 4px; font-family: 'Georgia', serif; border: 1px solid #b7b7a4; border-radius: 4px; background: #fff; color: #283618;">
+                        <option value="borda-simples">Simples</option>
+                        <option value="borda-artistica">Artística / Vintage</option>
+                        <option value="borda-dupla">Dupla Clássica</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-size: 0.85rem; font-family: 'Georgia', serif; color: #606c38;">Cor da Tinta:</span>
+                    <div style="display: flex; gap: 6px;">
+                        <button onclick="mudarCorLetra('#283618')" style="width: 20px; height: 20px; background: #283618; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Verde Floresta"></button>
+                        <button onclick="mudarCorLetra('#111111')" style="width: 20px; height: 20px; background: #111111; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Preto Nanquim"></button>
+                        <button onclick="mudarCorLetra('#5e503f')" style="width: 20px; height: 20px; background: #5e503f; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Sépia Nostálgico"></button>
+                        <button onclick="mudarCorLetra('#0f4c5c')" style="width: 20px; height: 20px; background: #0f4c5c; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Azul Noite"></button>
+                    </div>
+                </div>
             </div>
 
             <div id="papel-escrita" class="borda-simples" style="position: relative; background: #fff; min-height: 350px; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; box-sizing: border-box; margin-bottom: 10px;">
                 <textarea id="corpo-texto" class="textarea-poema" oninput="ajustarAlturaPapel(this)" placeholder="Escreva aqui as linhas da sua história..." style="width: 100%; min-height: 250px; max-height: 70vh; border: none; outline: none; resize: none; font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8; color: #283618; background: transparent; overflow-y: auto; box-sizing: border-box;"></textarea>
                 
                 <div id="carimbo-area" class="carimbo-area"></div>
-            </div>                
-                <div id="carimbo-area" class="carimbo-area"></div>
             </div>
-
-            <div class="botoes-salvamento">
-                <button onclick="carimbarTexto()" class="btn-footer" style="background-color: #bc6c25;">💮 CARIMBAR</button>
-                <button onclick="salvarNoBanco()" class="btn-footer" style="background-color: #283618;">💾 Guardar na Estante</button>
-                <button onclick="exportarComoTXT()" class="btn-footer" style="background-color: #d4a373;">📄 Baixar .TXT</button>
-                <button onclick="window.print()" class="btn-footer" style="background-color: #b7b7a4;">🖨️ Gerar PDF / Imprimir</button>
-            </div>
-        </div>
 
     </div>
 
@@ -454,9 +459,14 @@
                         document.getElementById('carimbo-area').style.opacity = "0";
                     }
                     ajustarAlturaPapel(txtArea);
+                document.getElementById('btn-fechar-texto').style.display = "block"; 
+    
+    ajustarAlturaPapel(txtArea);    
                 });
+                
             });
         });
+        
     }
 
     // 4. DELETAR TEXTO DA NUVEM
@@ -583,6 +593,59 @@
         const salva = localStorage.getItem('escritorio_rubrica');
         if (salva) document.getElementById('rubrica-atual-preview').innerHTML = salva;
     };
+    // ========================================================
+    // 1. NOVAS FUNÇÕES: MOLDURAS, CORES DA TINTA E FECHAMENTO
+    // ========================================================
+
+    // Função para alterar a borda/moldura do papel dinamicamente
+    function mudarEstiloBorda(classeBorda) {
+        const papel = document.getElementById('papel-escrita');
+        if (!papel) return;
+        
+        // Limpa as classes de borda para não acumular uma em cima da outra
+        papel.className = "";
+        
+        // Adiciona a classe selecionada
+        papel.classList.add(classeBorda);
+        
+        // Aplica os estilos visuais reforçados para cada tipo de moldura
+        if (classeBorda === 'borda-artistica') {
+            papel.style.border = "8px double #bc6c25";
+        } else if (classeBorda === 'borda-dupla') {
+            papel.style.border = "4px double #b7b7a4";
+        } else {
+            papel.style.border = "none"; // Borda simples padrão
+        }
+    }
+
+    // Função para alterar a cor da tinta (letra) do texto
+    function mudarCorLetra(cor) {
+        const txtArea = document.getElementById('corpo-texto');
+        if (txtArea) {
+            txtArea.style.color = cor;
+        }
+    }
+
+    // Função para limpar o papel e fechar o texto aberto sem resetar a página
+    function fecharTextoAtual() {
+        // Limpa os campos de texto (Título e Corpo)
+        document.getElementById('titulo-texto').value = "";
+        document.getElementById('corpo-texto').value = "";
+        
+        // Esconde o carimbo e o botão de fechar leitura
+        document.getElementById('carimbo-area').style.opacity = "0";
+        document.getElementById('btn-fechar-texto').style.display = "none";
+        
+        // Reseta o seletor de borda e volta o papel para o estilo simples
+        document.getElementById('seletor-borda').value = "borda-simples";
+        mudarEstiloBorda("borda-simples");
+        
+        // Restaura a cor padrão da fonte/tinta
+        mudarCorLetra("#283618");
+        
+        // Encolhe o papel de volta para o tamanho inicial padrão
+        ajustarAlturaPapel(document.getElementById('corpo-texto'));
+    }
 </script>
 </body>
 </html>
