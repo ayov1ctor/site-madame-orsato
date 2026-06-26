@@ -234,14 +234,15 @@
 
         .btn-footer:active { transform: scale(0.98); }
 
-        /* Estilização para Ocultar Controles na Impressão/PDF */
-        @media print {
-            body { background: #fff; padding: 0; }
-            header, .sidebar, .toolbar-papel, .botoes-salvamento { display: none !important; }
-            .workspace { grid-template-columns: 1fr; }
-            .papel-escrita { box-shadow: none; border: none !important; padding: 0; }
-        }
-    </style>
+       /* Outros estilos que você já tinha antes continuam aqui em cima... */
+/* Faz o placeholder funcionar na div editable */
+#corpo-texto:empty:before {
+    content: attr(placeholder);
+    color: #b7b7a4;
+    font-style: italic;
+    cursor: text;
+}
+</style>
 </head>
 <body>
 
@@ -338,9 +339,17 @@
                 <h3>📚 Textos na Estante</h3>
                 <div id="lista-documentos" class="lista-documentos"></div>
             </div>
+            <div class="painel-acoes-escritorio" style="display: flex; gap: 10px; margin-top: 25px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 8px; justify-content: center; flex-wrap: wrap;">
+    <button class="btn-action" onclick="carimbarTexto()" style="background-color: #bc6c25; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">Q_Q Carimbar Texto</button>
+    <button class="btn-action" onclick="salvarNoBanco()" style="background-color: #606c38; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">💾 Guardar na Estante</button>
+    <button class="btn-action" onclick="exportarComoTXT()" style="background-color: #b7b7a4; color: #283618; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">📄 Baixar .TXT</button>
+    <button class="btn-action" onclick="exportarComoDOCX()" style="background-color: #4a7c59; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">📝 Baixar .DOCX</button>
+    <button class="btn-action" onclick="imprimirOuSalvarPDF()" style="background-color: #283618; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-family: 'Georgia', serif;">🖨️ Imprimir / Gerar PDF</button>
+</div>
         </div>
 
         <div class="main-content">
+            
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
                 <input type="text" id="titulo-texto" class="input-text" placeholder="Título da Obra..." style="margin-bottom: 0; flex-grow: 1;">
                 
@@ -357,28 +366,196 @@
                     </select>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <span style="font-size: 0.85rem; font-family: 'Georgia', serif; color: #606c38;">Cor da Tinta:</span>
-                    <div style="display: flex; gap: 6px;">
-                        <button onclick="mudarCorLetra('#283618')" style="width: 20px; height: 20px; background: #283618; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Verde Floresta"></button>
-                        <button onclick="mudarCorLetra('#111111')" style="width: 20px; height: 20px; background: #111111; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Preto Nanquim"></button>
-                        <button onclick="mudarCorLetra('#5e503f')" style="width: 20px; height: 20px; background: #5e503f; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Sépia Nostálgico"></button>
-                        <button onclick="mudarCorLetra('#0f4c5c')" style="width: 20px; height: 20px; background: #0f4c5c; border: 1px solid #000; border-radius: 50%; cursor: pointer;" title="Azul Noite"></button>
-                    </div>
-                </div>
-            </div>
+                <div style="display: flex; gap: 12px; margin-bottom: 25px; align-items: center; flex-wrap: wrap; background: linear-gradient(145deg, #ffffff, #f0f0f3); padding: 12px 20px; border-radius: 12px; font-family: 'Georgia', serif; box-shadow: 5px 5px 15px #d1d1d4, -5px -5px 15px #ffffff; border: 1px solid rgba(255,255,255,0.6);">
+    
+    <style>
+        .btn-tool-3d {
+            padding: 8px 12px;
+            font-family: 'Georgia', serif;
+            font-size: 14px;
+            color: #4a5759;
+            background: linear-gradient(145deg, #ffffff, #e6e6e9);
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 3px 3px 6px #d1d1d4, -3px -3px 6px #ffffff;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            box-sizing: border-box;
+        }
+        .btn-tool-3d:hover {
+            color: #283618;
+            transform: translateY(-2px);
+            box-shadow: 4px 6px 12px #c4c4c7, -4px -4px 12px #ffffff;
+        }
+        
+        /* NOVA CLASSE: BOTÃO ATIVADO (Fica afundado com destaque em tom musgo elegante) */
+        .btn-tool-3d.ativo {
+            color: #ffffff !important;
+            background: linear-gradient(145deg, #4a5d42, #283618) !important; /* Tom musgo premium */
+            transform: translateY(1px);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.4), inset -2px -2px 5px rgba(255,255,255,0.2) !important;
+        }
 
-            <div id="papel-escrita" class="borda-simples" style="position: relative; background: #fff; min-height: 350px; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; box-sizing: border-box; margin-bottom: 10px;">
-                <textarea id="corpo-texto" class="textarea-poema" oninput="ajustarAlturaPapel(this)" placeholder="Escreva aqui as linhas da sua história..." style="width: 100%; min-height: 250px; max-height: 70vh; border: none; outline: none; resize: none; font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8; color: #283618; background: transparent; overflow-y: auto; box-sizing: border-box;"></textarea>
-                
-                <div id="carimbo-area" class="carimbo-area"></div>
-            </div>
+        .btn-tool-3d:active {
+            transform: translateY(1px);
+            background: linear-gradient(145deg, #e6e6e9, #ffffff);
+            box-shadow: inset 2px 2px 5px #d1d1d4, inset -2px -2px 5px #ffffff;
+        }
+        /* ... restante dos seus estilos de select e divisor continuam iguais ... */
+    /* Efeito de Folha de Caderno com Linhas Pautadas */
+.folha-caderno-real {
+    /* Cria as linhas horizontais azuis claras com margem para escrita */
+    background-image: linear-gradient(#e1e6f0 1px, transparent 1px) !important;
+    background-size: 100% 2rem !important; /* Altura de cada linha parecida com caderno real */
+    background-attachment: local !important;
+    
+    /* Fontes ajustadas cirurgicamente para a letra "pisar" em cima da linha */
+    font-family: 'Georgia', serif !important;
+    font-size: 1.25rem !important;
+    line-height: 2rem !important; /* Deve ser exatamente igual ao tamanho do background-size! */
+    padding-top: 0.4rem !important; /* Ajuste fino inicial */
+    text-align: left !important; /* Escrita natural de caderno */
+}
 
+/* Moldura e Fundo Floral Baseado na Inspiração */
+/* O PAPEL DE CARTA DA SUA INSPIRAÇÃO EM CÓDIGO PURO */
+.papel-decorado-flores {
+    position: relative !important;
+    /* Injeta a sua imagem de inspiração diretamente como plano de fundo */
+    background-image: url('data:image/jpeg;base64,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');
+    background-size: 100% 100% !important; /* Estica a imagem para virar o papel inteiro */
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    
+    /* Moldura fina idêntica à foto */
+    border: 1px solid #d4ccb6 !important;
+    outline: 1px solid #d4ccb6 !important;
+    outline-offset: -8px !important;
+    transition: all 0.3s ease;
+}
+
+/* LINHAS PAUTADAS DO CADERNO (Configuradas para a escrita de verdade) */
+.folha-caderno-real {
+    /* Cria as linhas escuras horizontais finas idênticas às da foto */
+    background-image: linear-gradient(rgba(80, 90, 100, 0.25) 1px, transparent 1px) !important;
+    background-size: 100% 2.38rem !important; /* Espaçamento idêntico ao da imagem */
+    background-attachment: local !important;
+    
+    /* Faz a sua letra "pisar" perfeitamente em cima da linha */
+    font-family: 'Georgia', serif !important;
+    font-size: 1.25rem !important;
+    line-height: 2.38rem !important; /* Casamento perfeito com o background-size */
+    padding-top: 0.1rem !important;
+    text-align: left !important;
+}
+
+/* Ajuste do Placeholder para não flutuar */
+#corpo-texto:empty:before {
+    line-height: 2.38rem !important;
+    color: #b1a78f;
+}
+/* ==========================================
+   REGRAS ESPECÍFICAS PARA GERAR O PDF PERFEITO
+   ========================================== */
+@media print {
+    /* 1. Esconde absolutamente tudo o que não for o papel de escrita (menus, botões, etc) */
+    body * {
+        visibility: hidden;
+    }
+    
+    /* 2. Força o papel de escrita e o texto dentro dele a ficarem visíveis */
+    #papel-escrita, #papel-escrita * {
+        visibility: visible;
+    }
+    
+    /* 3. Posiciona o papel perfeitamente para preencher a folha A4 do PDF */
+    #papel-escrita {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 110px 75px 90px 75px !important;
+        margin: 0 !important;
+        background-color: #fffcf7 !important;
+        /* Força todos os navegadores a renderizarem as flores e as linhas de fundo */
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* 4. Garante que as linhas pautadas apareçam perfeitamente no arquivo */
+    .folha-caderno-real {
+        background-image: linear-gradient(rgba(80, 90, 100, 0.25) 1px, transparent 1px) !important;
+        background-size: 100% 2.38rem !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    /* Configuração da página de impressão para zerar margens físicas da impressora */
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+}
+    </style>
+
+    <select class="select-tool-3d" onchange="executarComando('fontName', this.value)">
+        <option value="Georgia">✨ Georgia</option>
+        <option value="Times New Roman">📜 Times New Roman</option>
+        <option value="Arial">📱 Arial</option>
+        <option value="Courier New">⌨️ Courier New</option>
+        <option value="Garamond">✒️ Garamond</option>
+    </select>
+
+    <select class="select-tool-3d" onchange="executarComando('fontSize', this.value)">
+        <option value="3">📄 Normal</option>
+        <option value="4">📐 Subtítulo</option>
+        <option value="5">👑 Título</option>
+    </select>
+
+    <div class="divisor-3d"></div>
+
+    <button id="btn-bold" class="btn-tool-3d" onclick="executarComando('bold')" title="Negrito" style="font-weight: 900;">B</button>
+    <button id="btn-italic" class="btn-tool-3d" onclick="executarComando('italic')" title="Itálico" style="font-style: italic; font-weight: bold;">I</button>
+    <button id="btn-underline" class="btn-tool-3d" onclick="executarComando('underline')" title="Sublinhado" style="text-decoration: underline; font-weight: bold;">U</button>
+    <div class="divisor-3d"></div>
+
+    <button id="btn-align-left" class="btn-tool-3d" onclick="executarComando('justifyLeft')" title="Alinhar à Esquerda">📄⇦</button>
+    <button id="btn-align-center" class="btn-tool-3d" onclick="executarComando('justifyCenter')" title="Centralizar">📋</button>
+    <button id="btn-align-right" class="btn-tool-3d" onclick="executarComando('justifyRight')" title="Alinhar à Direita">⇨📄</button>
+    <button id="btn-align-full" class="btn-tool-3d" onclick="executarComando('justifyFull')" title="Justificar">📖</button>
+
+    <div class="divisor-3d"></div>
+
+    <button id="btn-indent" class="btn-tool-3d" onclick="executarComando('indent')" title="Adicionar Parágrafo (Recuo)" style="min-width: 105px; font-size: 13px;">⇥ Parágrafo</button>
+    <button id="btn-outdent" class="btn-tool-3d" onclick="executarComando('outdent')" title="Diminuir Recuo">⇤</button>
+    <div class="divisor-3d"></div>
+
+    <div style="display: flex; gap: 10px; align-items: center; padding-left: 5px;">
+        <button onclick="mudarCorLetra('#283618')" title="Tinta Musgo" style="width: 22px; height: 22px; background: radial-gradient(circle at 6px 6px, #4f643f, #283618); border: none; border-radius: 50%; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.3), -1px -1px 4px rgba(255,255,255,0.5); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></button>
+        <button onclick="mudarCorLetra('#111111')" title="Tinta Nanquim" style="width: 22px; height: 22px; background: radial-gradient(circle at 6px 6px, #444444, #111111); border: none; border-radius: 50%; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.3), -1px -1px 4px rgba(255,255,255,0.5); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></button>
+        <button onclick="mudarCorLetra('#5e503f')" title="Tinta Sépia" style="width: 22px; height: 22px; background: radial-gradient(circle at 6px 6px, #8a755e, #5e503f); border: none; border-radius: 50%; cursor: pointer; box-shadow: 2px 2px 5px rgba(0,0,0,0.3), -1px -1px 4px rgba(255,255,255,0.5); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></button>
     </div>
+</div>
+<div id="papel-escrita" class="papel-decorado-flores" style="position: relative; min-height: 800px; height: auto; max-width: 100%; width: 100%; padding: 110px 75px 90px 75px; border-radius: 2px; box-shadow: 0 10px 35px rgba(0,0,0,0.05); display: block; box-sizing: border-box; margin-bottom: 25px; clear: both;">
+    
+    <div id="corpo-texto" class="folha-caderno-real" contenteditable="true" style="width: 100%; max-width: 100%; min-height: 600px; height: auto; border: none; outline: none; color: #2d3748; background: transparent; box-sizing: border-box; display: block; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; white-space: pre-wrap;" placeholder="Escreva aqui as linhas da sua história..."></div>
+    
+    <div id="carimbo-area" class="carimbo-area" style="position: absolute; bottom: 40px; right: 80px; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 10;"></div>
+</div>
 
+<div id="palco-pdf-oculto" style="position: absolute; left: -9999px; top: -9999px; width: 650px; background: #fff; box-sizing: border-box;"></div>
  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
     // 1. CONFIGURAÇÃO DO SEU BANCO DE DADOS (Substitua pelos seus dados do Firebase)
     const firebaseConfig = {
@@ -403,9 +580,11 @@
     function salvarNoBanco() {
         const tituloInput = document.getElementById('titulo-texto').value.trim();
         const tituloDefinitivo = tituloInput !== "" ? tituloInput : "Poema sem Nome";
-        const corpo = document.getElementById('corpo-texto').value;
-        const carimbado = document.getElementById('carimbo-area').style.opacity === "0.8";
-
+        // Dentro de salvarNoBanco:
+const corpo = document.getElementById('corpo-texto').innerHTML;
+        // Garanta que esta linha dentro da função salvarNoBanco esteja exatamente assim:
+const carimboElement = document.getElementById('carimbo-area');
+const carimbado = carimboElement ? (carimboElement.style.opacity === "0.8") : false;
         if (!corpo) { 
             alert("Escreva algo no papel antes de guardar."); 
             return; 
@@ -461,7 +640,7 @@
                 document.getElementById(`doc-${doc.id}`).addEventListener('click', () => {
                     document.getElementById('titulo-texto').value = ob.titulo;
                     const txtArea = document.getElementById('corpo-texto');
-                    txtArea.value = ob.corpo;
+txtArea.innerHTML = ob.corpo; // Em vez de .value = ob.corpo
                     
                     if (ob.carimbado) {
                         carimbarTexto();
@@ -583,11 +762,32 @@
     }
 
     function carimbarTexto() {
-        const alvo = document.getElementById('carimbo-area');
-        const cache = rubricaSelecionadaSVG || localStorage.getItem('escritorio_rubrica');
-        if (!cache) { alert("Crie e selecione uma rubrica primeiro!"); return; }
-        alvo.innerHTML = cache; alvo.style.opacity = "0.8"; 
+    const alvo = document.getElementById('carimbo-area');
+    if (!alvo) return;
+
+    // Tenta pegar a variável global ou resgatar diretamente do localStorage do navegador
+    let cacheRubrica = rubricaSelecionadaSVG || localStorage.getItem('escritorio_rubrica');
+    
+    // Se o preview tiver conteúdo mas a variável global sumiu, recuperamos o HTML do preview
+    if (!cacheRubrica) {
+        const previewContent = document.getElementById('rubrica-atual-preview');
+        if (previewContent && !previewContent.innerText.includes("Nenhuma criada")) {
+            cacheRubrica = previewContent.innerHTML;
+        }
     }
+
+    if (!cacheRubrica || cacheRubrica.trim() === "" || cacheRubrica.includes("Nenhuma criada")) { 
+        alert("Por favor, crie e selecione/desenhe uma rubrica na barra lateral antes de carimbar o papel!"); 
+        return; 
+    }
+    
+    // Injeta a rubrica e força a opacidade para ela aparecer nitidamente
+    alvo.innerHTML = cacheRubrica; 
+    alvo.style.opacity = "0.8"; 
+    alvo.style.display = "block";
+    
+    alert("Texto assinado e carimbado com sucesso! 🖋️");
+}
 
     function exportarComoTXT() {
         const tit = document.getElementById('titulo-texto').value.trim() || "Minha Obra";
@@ -655,6 +855,256 @@
         
         // Encolhe o papel de volta para o tamanho inicial padrão
         ajustarAlturaPapel(document.getElementById('corpo-texto'));
+    }
+    // --- FUNÇÃO PARA EXCLUIR A RUBRICA ATUAL E LIBERAR ESPAÇO PARA UMA NOVA ---
+    function excluirRubricaAtual() {
+        if (confirm("Deseja mesmo apagar a sua assinatura atual para criar uma nova?")) {
+            // Limpa as variáveis globais e locais da memória
+            rubricaSelecionadaSVG = "";
+            localStorage.removeItem('escritorio_rubrica');
+            
+            // Reseta o quadradinho de preview para o estado inicial
+            document.getElementById('rubrica-atual-preview').innerHTML = `
+                <span style="color: #b7b7a4; font-size: 0.8rem; font-style: italic;">Nenhuma criada</span>
+            `;
+            
+            // Se o papel estiver com um carimbo visível na tela, esconde ele também
+            document.getElementById('carimbo-area').style.opacity = "0";
+            document.getElementById('carimbo-area').innerHTML = "";
+            
+            // Se ela estiver na aba de desenho à mão, limpa o canvas para ela refazer
+            limparCanvasDesenho();
+            
+            // Limpa o campo de texto do nome da rubrica por IA
+            const campoNome = document.getElementById('nome-rubrica');
+            if (campoNome) campoNome.value = "";
+            const containerIA = document.getElementById('container-rubricas');
+            if (containerIA) containerIA.innerHTML = "";
+
+            alert("Assinatura removida! Agora você pode criar uma nova por IA ou desenho. ✨");
+        }
+    }
+    // ========================================================
+    // ADICIONE ESTAS FUNÇÕES LOGO ACIMA DE WINDOW.ONLOAD
+    // ========================================================
+
+    function carimbarTexto() {
+        const alvo = document.getElementById('carimbo-area');
+        const cache = rubricaSelecionadaSVG || localStorage.getItem('escritorio_rubrica');
+        
+        if (!cache || cache.includes("Nenhuma criada")) { 
+            alert("Crie e selecione ou desenhe uma rubrica na barra lateral antes de carimbar!"); 
+            return; 
+        }
+        
+        alvo.innerHTML = cache; 
+        alvo.style.opacity = "0.8"; 
+    }
+
+    // --- FUNÇÃO CORE DO EDITOR: Aplica negrito, itálico, fontes e alinhamentos ---
+    function executarComando(comando, valor = null) {
+        document.execCommand(comando, false, valor);
+        // Mantém o foco no papel após clicar no botão da barra de ferramentas
+        document.getElementById('corpo-texto').focus();
+    }
+
+    // --- CORREÇÃO DA FUNÇÃO MUDAR COR DA LETRA PARA FORMATO RICO ---
+    function mudarCorLetra(cor) {
+        executarComando('foreColor', cor);
+    }
+
+    // Função que verifica quais formatações estão ativas sob o cursor e atualiza os botões
+    function atualizarStatusFerramentas() {
+        // 1. Elementos de Estilo
+        const btnBold = document.getElementById('btn-bold');
+        const btnItalic = document.getElementById('btn-italic');
+        const btnUnderline = document.getElementById('btn-underline');
+
+        // 2. Elementos de Alinhamento
+        const btnLeft = document.getElementById('btn-align-left');
+        const btnCenter = document.getElementById('btn-align-center');
+        const btnRight = document.getElementById('btn-align-right');
+        const btnFull = document.getElementById('btn-align-full');
+
+        // 3. Elemento de Parágrafo
+        const btnIndent = document.getElementById('btn-indent');
+
+        // --- VALIDAÇÃO DE ESTILOS BÁSICOS ---
+        if (btnBold) {
+            document.queryCommandState('bold') ? btnBold.classList.add('ativo') : btnBold.classList.remove('ativo');
+        }
+        if (btnItalic) {
+            document.queryCommandState('italic') ? btnItalic.classList.add('ativo') : btnItalic.classList.remove('ativo');
+        }
+        if (btnUnderline) {
+            document.queryCommandState('underline') ? btnUnderline.classList.add('ativo') : btnUnderline.classList.remove('ativo');
+        }
+
+        // --- VALIDAÇÃO DE ALINHAMENTOS ---
+        if (btnLeft && btnCenter && btnRight && btnFull) {
+            // Remove a classe ativo de todos para limpar o estado antes do teste
+            btnLeft.classList.remove('ativo');
+            btnCenter.classList.remove('ativo');
+            btnRight.classList.remove('ativo');
+            btnFull.classList.remove('ativo');
+
+            // Testa qual alinhamento está ativo no bloco atual do cursor
+            if (document.queryCommandState('justifyCenter')) {
+                btnCenter.classList.add('ativo');
+            } else if (document.queryCommandState('justifyRight')) {
+                btnRight.classList.add('ativo');
+            } else if (document.queryCommandState('justifyFull')) {
+                btnFull.classList.add('ativo');
+            } else {
+                // O padrão nativo do navegador é à esquerda
+                btnLeft.classList.add('ativo');
+            }
+        }
+
+        // --- VALIDAÇÃO DE PARÁGRAFO (RECUO) ---
+        if (btnIndent) {
+            // Verifica se o elemento atual possui alguma margem de recuo (indrent/blockquote)
+            // Usamos queryCommandValue para checar se há uma estrutura de bloco recuado ativa
+            const indentAtivo = document.queryCommandState('indent') || document.queryCommandValue('formatBlock') === 'blockquote';
+            
+            // Para dar um feedback mais preciso sobre a presença de recuo:
+            const selecao = window.getSelection();
+            if (selecao.rangeCount > 0) {
+                let containerPai = selecao.getRangeAt(0).startContainer;
+                if (containerPai.nodeType === 3) containerPai = containerPai.parentNode;
+                
+                // Se estiver dentro de um blockquote ou elemento com margin-left, acende o botão
+                const estiloPai = window.getComputedStyle(containerPai);
+                if (containerPai.closest('blockquote') || parseInt(estiloPai.paddingLeft) > 0 || parseInt(estiloPai.marginLeft) > 0) {
+                    btnIndent.classList.add('ativo');
+                } else {
+                    btnIndent.classList.remove('ativo');
+                }
+            }
+        }
+    }
+
+    // Vincula o monitoramento aos eventos do papel de escrita assim que a página carregar
+    document.addEventListener("DOMContentLoaded", function() {
+        const papel = document.getElementById('corpo-texto');
+        if (papel) {
+            // Atualiza ao digitar, ao clicar em pontos diferentes do texto e ao selecionar palavras
+            papel.addEventListener('keyup', atualizarStatusFerramentas);
+            papel.addEventListener('mouseup', atualizarStatusFerramentas);
+            papel.addEventListener('click', atualizarStatusFerramentas);
+        }
+    });
+
+    // Modificação na sua função antiga para forçar a atualização visual assim que clicar nos botões
+    function executarComando(comando, valor = null) {
+        document.execCommand(comando, false, valor);
+        document.getElementById('corpo-texto').focus();
+        atualizarStatusFerramentas(); // Executa o scan imediatamente após o clique
+    }
+    // --- ATUALIZAÇÃO DA FUNÇÃO DE FECHAR/LIMPAR O TEXTO ---
+    function fecharTextoAtual() {
+        document.getElementById('titulo-texto').value = "";
+        document.getElementById('corpo-texto').innerHTML = ""; // Limpa a div rica
+        
+        document.getElementById('carimbo-area').style.opacity = "0";
+        document.getElementById('btn-fechar-texto').style.display = "none";
+        document.getElementById('seletor-borda').value = "borda-simples";
+        mudarEstiloBorda("borda-simples");
+        
+        // Limpa formatações residuais voltando ao padrão
+        document.getElementById('corpo-texto').style.color = "#283618";
+        document.getElementById('corpo-texto').style.fontFamily = "'Georgia', serif";
+    }
+
+    // --- AJUSTE NAS FUNÇÕES DE EXPORTAR (Para lerem o HTML formatado da div) ---
+    function exportarComoTXT() {
+        const tit = document.getElementById('titulo-texto').value.trim() || "Minha Obra";
+        // Pega apenas o texto limpo, ignorando tags HTML para o arquivo simples .txt
+        const txt = document.getElementById('corpo-texto').innerText;
+        if (!txt) { alert("O papel está vazio!"); return; }
+
+        const blob = new Blob([`${tit}\n\n${txt}`], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob); 
+        link.download = `${tit}.txt`; 
+        link.click();
+    }
+
+    // ========================================================
+    // VERSÃO SUPREMA DE EXPORTAÇÃO (NATIVA E SEM DEPENDÊNCIAS)
+    // ========================================================
+
+    function imprimirOuSalvarPDF() {
+    const txtArea = document.getElementById('corpo-texto');
+    const tit = document.getElementById('titulo-texto').value.trim() || "Minha Obra";
+
+    if (!txtArea || !txtArea.innerHTML) { 
+        alert("Não há conteúdo no papel para gerar o PDF."); 
+        return; 
+    }
+
+    // Dispara a impressão nativa do sistema
+    window.print();
+}
+
+   function exportarComoDOCX() {
+        const tit = document.getElementById('titulo-texto').value.trim() || "Minha Obra";
+        const papel = document.getElementById('papel-escrita');
+        const conteudoFormatadoHtml = document.getElementById('corpo-texto').innerHTML; // Capta a formatação exata
+        
+        if (!papel || !conteudoFormatadoHtml) { alert("O papel está vazio!"); return; }
+
+        const estiloBorda = window.getComputedStyle(papel).border;
+        const alvoCarimbo = document.getElementById('carimbo-area');
+        let imgHTML = "";
+
+        if (alvoCarimbo && alvoCarimbo.style.opacity === "0.8" && alvoCarimbo.innerHTML.trim() !== "") {
+            const svgElement = alvoCarimbo.querySelector('svg');
+            if (svgElement) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const svgString = new XMLSerializer().serializeToString(svgElement);
+                canvas.width = 200; canvas.height = 80;
+                const img = new Image();
+                const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+                const url = URL.createObjectURL(svgBlob);
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, 200, 80);
+                    const pngBase64 = canvas.toDataURL('image/png');
+                    URL.revokeObjectURL(url);
+                    imgHTML = `<div style="text-align: right; margin-top: 50px;"><img src="${pngBase64}" width="150" height="60" /></div>`;
+                    continuarExportacaoWord();
+                };
+                img.src = url;
+                return; // Aguarda processar a imagem do carimbo
+            }
+        }
+        continuarExportacaoWord();
+
+        function continuarExportacaoWord() {
+            const htmlWord = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta charset="utf-8">
+                <style>
+                    body { font-family: 'Georgia', serif; margin: 40px; background-color: #fff; }
+                    .document-box { border: ${estiloBorda !== 'none' ? estiloBorda : '2px double #b7b7a4'}; padding: 35px; }
+                    h1 { color: #283618; text-align: center; font-size: 22pt; margin-bottom: 25px; }
+                </style>
+            </head>
+            <body>
+                <div class="document-box">
+                    <h1>${tit}</h1>
+                    <div>${conteudoFormatadoHtml}</div>
+                    ${imgHTML}
+                </div>
+            </body>
+            </html>`;
+
+            const blob = new Blob(['\ufeff' + htmlWord], { type: "application/msword;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `${tit}.doc`;
+            link.click();
+        }
     }
 </script>
 </body>
