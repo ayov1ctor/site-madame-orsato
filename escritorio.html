@@ -361,274 +361,228 @@
 
     </div>
 
-    <script>
-        let rubricaSelecionadaSVG = "";
-        let musicaTocando = false;
+ <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-        // 1. Gerenciamento do Áudio de Piano
-        function toggleMusica() {
-            const audio = document.getElementById('piano-sound');
-            const btn = document.getElementById('btn-music');
-            if (!audio) return;
-            
-            if (!musicaTocando) {
-                audio.volume = 0.4; // Define o volume em 40% para ficar bem ambiente e de fundo
-                audio.play().catch(err => console.log("Permissão de áudio pendente."));
-                musicaTocando = true;
-                btn.innerText = "⏸️ Pausar Trilha";
-                btn.style.backgroundColor = "#606c38";
-                btn.style.color = "#fff";
-            } else {
-                audio.pause();
-                musicaTocando = false;
-                btn.innerText = "🎵 Ouvir trilha";
-                btn.style.backgroundColor = "#e9d8a6";
-                btn.style.color = "#606c38";
-            }
+<script>
+    // 1. CONFIGURAÇÃO DO SEU BANCO DE DADOS (Substitua pelos seus dados do Firebase)
+    const firebaseConfig = {
+        apiKey: "AIzaSyB2JYIQNho2U1iMqw0GN1JsyqQuK4ChsTQ",
+  authDomain: "refugio-literario-312a4.firebaseapp.com",
+  projectId: "refugio-literario-312a4",
+  storageBucket: "refugio-literario-312a4.firebasestorage.app",
+  messagingSenderId: "366450161932",
+  appId: "1:366450161932:web:dede347d5e5ba17138b129",
+  measurementId: "G-R06E76YE6V"
+
+    };
+
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let rubricaSelecionadaSVG = "";
+    let musicaTocando = false;
+
+    // 2. SALVAR TEXTO NA NUVEM
+    function salvarNoBanco() {
+        const tituloInput = document.getElementById('titulo-texto').value.trim();
+        const tituloDefinitivo = tituloInput !== "" ? tituloInput : "Poema sem Nome";
+        const corpo = document.getElementById('corpo-texto').value;
+        const carimbado = document.getElementById('carimbo-area').style.opacity === "0.8";
+
+        if (!corpo) { 
+            alert("Escreva algo no papel antes de guardar."); 
+            return; 
         }
 
-       // --- SISTEMA DE ABAS DA RUBRICA ---
-        function mudarModoRubrica(modo) {
-            const blocoIA = document.getElementById('bloco-rubrica-ia');
-            const blocoDesenho = document.getElementById('bloco-rubrica-desenho');
-            const tabIA = document.getElementById('tab-ia');
-            const tabDesenho = document.getElementById('tab-desenho');
+        // Criamos o documento na nuvem com a data e hora do envio
+        db.collection("textos").add({
+            titulo: tituloDefinitivo,
+            corpo: corpo,
+            carimbado: carimbado,
+            dataEnvio: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            alert("Eternizado na estante em tempo real! ✨");
+            // Limpa os campos após salvar
+            document.getElementById('titulo-texto').value = "";
+            document.getElementById('corpo-texto').value = "";
+            document.getElementById('carimbo-area').style.opacity = "0";
+            ajustarAlturaPapel(document.getElementById('corpo-texto'));
+        })
+        .catch((error) => {
+            console.error("Erro ao salvar na nuvem: ", error);
+            alert("Ops, erro ao salvar na nuvem.");
+        });
+    }
 
-            if (modo === 'ia') {
-                blocoIA.style.display = 'block';
-                blocoDesenho.style.display = 'none';
-                tabIA.style.background = '#fff'; tabIA.style.fontWeight = 'bold'; tabIA.style.color = '#606c38';
-                tabDesenho.style.background = 'transparent'; tabDesenho.style.fontWeight = 'normal'; tabDesenho.style.color = '#7f8c8d';
-            } else {
-                blocoIA.style.display = 'none';
-                blocoDesenho.style.display = 'block';
-                tabIA.style.background = 'transparent'; tabIA.style.fontWeight = 'normal'; tabIA.style.color = '#7f8c8d';
-                tabDesenho.style.background = '#fff'; tabDesenho.style.fontWeight = 'bold'; tabDesenho.style.color = '#606c38';
-                inicializarCanvasDesenho(); // Inicia o quadro negro para desenho
-            }
-        }
-
-        // --- IA GERADORA DE ASSINATURAS HUMANIZADAS ---
-        function gerarOpcoesRubrica() {
-            const nome = document.getElementById('nome-rubrica').value.trim();
-            const container = document.getElementById('container-rubricas');
-            if (!nome) { alert("Escreva um nome para a IA analisar a assinatura."); return; }
-
-            container.innerHTML = "";
-
-            // Simulações de gesticulação manual estável (Estilo assinatura corrida, elegante ou expressiva)
-            const estilosHumanos = [
-                { cor: '#0d1b2a', font: 'font-family: "Great Vibes", "Georgia", serif; font-style: italic;', d: "M 12,30 Q 30,5 50,28 T 90,20 T 130,35", loop: "M 15,38 C 60,48 100,22 150,28" },
-                { cor: '#1b4332', font: 'font-family: "Times New Roman"; font-weight: 300;', d: "M 8,18 Q 45,42 75,8 T 145,22", loop: "M 5,28 L 155,24 M 140,20 L 150,30" },
-                { cor: '#3a0ca3', font: 'font-family: "Courier New"; font-style: italic;', d: "M 15,12 C 40,40 70,-5 110,32", loop: "M 10,42 Q 80,48 145,40" }
-            ];
-
-            estilosHumanos.forEach((opc, i) => {
-                const svgSnippet = `
-                    <svg id="ia-signature-${i}" viewBox="0 0 160 50" width="130" height="50" style="background: #fff; border: 1px solid #e9d8a6; cursor: pointer; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);" onclick="fixarAssinatura('${i}')">
-                        <text x="25" y="30" style="${opc.style} font-size: 1.1rem; letter-spacing: -1px;" fill="${opc.cor}">${nome.substring(0,10)}</text>
-                        <path d="${opc.d}" fill="none" stroke="${opc.cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="${opc.loop}" fill="none" stroke="${opc.cor}" stroke-width="1" opacity="0.75"/>
-                    </svg>
-                `;
-                container.innerHTML += svgSnippet;
-            });
-        }
-
-        // --- MOTOR DA MESA DIGITALIZADORA (CANVAS) ---
-        let d_canvas, d_ctx;
-        let desenhando = false;
-
-        function inicializarCanvasDesenho() {
-            d_canvas = document.getElementById('canvas-desenho');
-            if (!d_canvas) return;
-            
-            d_ctx = d_canvas.getContext('2d');
-            
-            // Ajusta o tamanho interno baseado no display real da barra lateral
-            d_canvas.width = d_canvas.parentElement.offsetWidth - 2;
-            d_canvas.height = 100;
-
-            d_ctx.strokeStyle = '#111111'; // Cor da tinta da caneta
-            d_ctx.lineWidth = 2;
-            d_ctx.lineCap = 'round';
-            d_ctx.lineJoin = 'round';
-
-            // Eventos de Mouse
-            d_canvas.addEventListener('mousedown', (e) => { desenhando = true; d_ctx.beginPath(); d_ctx.moveTo(e.offsetX, e.offsetY); });
-            d_canvas.addEventListener('mousemove', (e) => { if(desenhando) { d_ctx.lineTo(e.offsetX, e.offsetY); d_ctx.stroke(); } });
-            window.addEventListener('mouseup', () => desenhando = false);
-
-            // Eventos Touch (Celular/Tablet)
-            d_canvas.addEventListener('touchstart', (e) => {
-                desenhando = true;
-                const rect = d_canvas.getBoundingClientRect();
-                d_ctx.beginPath();
-                d_ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-            });
-            d_canvas.addEventListener('touchmove', (e) => {
-                if(!desenhando) return;
-                const rect = d_canvas.getBoundingClientRect();
-                d_ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-                d_ctx.stroke();
-            });
-            d_canvas.addEventListener('touchend', () => desenhando = false);
-        }
-
-        function limparCanvasDesenho() {
-            if(d_ctx && d_canvas) d_ctx.clearRect(0, 0, d_canvas.width, d_canvas.height);
-        }
-
-        function salvarDesenhoComoRubrica() {
-            if (!d_canvas) return;
-            
-            // Converte a área desenhada em uma imagem PNG transparente
-            const imgDataURL = d_canvas.toDataURL("image/png");
-            
-            // Monta a tag de exibição da rubrica ativa
-            rubricaSelecionadaSVG = `<img src="${imgDataURL}" style="max-height: 50px; width: auto; object-fit: contain;"/>`;
-            
-            document.getElementById('rubrica-atual-preview').innerHTML = rubricaSelecionadaSVG;
-            localStorage.setItem('escritorio_rubrica', rubricaSelecionadaSVG);
-            alert("Sua rubrica feita à mão foi digitalizada e salva!");
-        }
-
-        function fixarAssinatura(id) {
-            const escolhida = document.getElementById(`ia-signature-${id}`);
-            if (!escolhida) return;
-
-            rubricaSelecionadaSVG = escolhida.outerHTML;
-            document.getElementById('rubrica-atual-preview').innerHTML = rubricaSelecionadaSVG;
-            
-            // Armazena no banco de dados local
-            localStorage.setItem('escritorio_rubrica', rubricaSelecionadaSVG);
-        }
-
-        // 3. Aplicação de Molduras
-        function mudarEstiloBorda() {
-            const select = document.getElementById('select-borda');
-            document.getElementById('papel-escrita').className = select.value;
-        }
-
-        // 4. Mecânica de Carimbar
-        function carimbarTexto() {
-            const alvo = document.getElementById('carimbo-area');
-            const cache = rubricaSelecionadaSVG || localStorage.getItem('escritorio_rubrica');
-
-            if (!cache) {
-                alert("Gere e selecione uma rubrica no painel esquerdo primeiro!");
-                return;
-            }
-
-            alvo.innerHTML = cache;
-            alvo.style.opacity = "0.8"; 
-        }
-
-        // 5. Banco de Dados Local (Estante de Documentos)
-        function salvarNoBanco() {
-            const titulo = document.getElementById('titulo-texto').value.trim() || "Poema sem Nome";
-            const corpo = document.getElementById('corpo-texto').value;
-            const carimbado = document.getElementById('carimbo-area').style.opacity === "0.8";
-
-            if (!corpo) { alert("Escreva algo no papel antes de guardar."); return; }
-
-            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
-            
-            banco.push({
-                id: Date.now(),
-                titulo: titulo,
-                corpo: corpo,
-                carimbado: carimbado
-            });
-
-            localStorage.setItem('banco_literario', JSON.stringify(banco));
-            alert("Sua obra foi armazenada com sucesso na estante virtual!");
-            listarObras();
-        }
-
-        function listarObras() {
+    // 3. BUSCAR E ATUALIZAR A LISTA DA ESTANTE EM TEMPO REAL
+    // Essa função fica "escutando" o banco na nuvem. Se você ou ela postarem algo, a lista atualiza sozinha!
+    function escutarEstanteVirtual() {
+        db.collection("textos").orderBy("dataEnvio", "desc")
+        .onSnapshot((snapshot) => {
             const painel = document.getElementById('lista-documentos');
             painel.innerHTML = "";
 
-            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
-
-            if (banco.length === 0) {
+            if (snapshot.empty) {
                 painel.innerHTML = `<span style="color: #b7b7a4; font-size: 0.9rem; font-style: italic;">Nenhum livro salvo...</span>`;
                 return;
             }
 
-            banco.forEach(ob => {
+            snapshot.forEach((doc) => {
+                const ob = doc.data();
                 const box = document.createElement('div');
                 box.className = 'doc-item';
+                
+                // Passamos os dados direto para a função abrir de forma segura
                 box.innerHTML = `
-                    <span style="font-weight: bold; color: #283618; cursor: pointer;" onclick="abrirObra(${ob.id})">📖 ${ob.titulo}</span>
-                    <span style="color: #ff3333; cursor: pointer; font-size: 0.9rem;" onclick="deletarObra(${ob.id})">❌</span>
+                    <span style="font-weight: bold; color: #283618; cursor: pointer;" id="doc-${doc.id}">📖 ${ob.titulo}</span>
+                    <span style="color: #ff3333; cursor: pointer; font-size: 0.9rem;" onclick="deletarObra('${doc.id}')">❌</span>
                 `;
                 painel.appendChild(box);
+
+                // Adiciona o clique para abrir o texto clicado
+                document.getElementById(`doc-${doc.id}`).addEventListener('click', () => {
+                    document.getElementById('titulo-texto').value = ob.titulo;
+                    const txtArea = document.getElementById('corpo-texto');
+                    txtArea.value = ob.corpo;
+                    
+                    if (ob.carimbado) {
+                        carimbarTexto();
+                    } else {
+                        document.getElementById('carimbo-area').style.opacity = "0";
+                    }
+                    ajustarAlturaPapel(txtArea);
+                });
             });
+        });
+    }
+
+    // 4. DELETAR TEXTO DA NUVEM
+    function deletarObra(id) {
+        if(confirm("Deseja mesmo apagar esse texto da estante compartilhada?")) {
+            db.collection("textos").doc(id).delete();
         }
+    }
 
-        function abrirObra(id) {
-            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
-            const obra = banco.find(o => o.id === id);
-            if (!obra) return;
-
-            document.getElementById('titulo-texto').value = obra.titulo;
-            
-            const txtArea = document.getElementById('corpo-texto');
-            txtArea.value = obra.corpo;
-
-            if (obra.carimbado) {
-                carimbarTexto();
-            } else {
-                document.getElementById('carimbo-area').style.opacity = "0";
-            }
-
-            // FORÇA O PAPEL A CRESCER AO ABRIR UM TEXTO SALVO:
-            ajustarAlturaPapel(txtArea);
+    // 5. FUNÇÕES DE ÁUDIO E INTERFACE (Mantidas do seu código original)
+    function toggleMusica() {
+        const audio = document.getElementById('piano-sound');
+        const btn = document.getElementById('btn-music');
+        if (!audio) return;
+        
+        if (!musicaTocando) {
+            audio.volume = 0.4;
+            audio.play().catch(err => console.log("Permissão pendente."));
+            musicaTocando = true;
+            btn.innerText = "⏸️ Pausar Trilha";
+            btn.style.backgroundColor = "#606c38"; btn.style.color = "#fff";
+        } else {
+            audio.pause();
+            musicaTocando = false;
+            btn.innerText = "🎵 Ouvir Piano";
+            btn.style.backgroundColor = "#e9d8a6"; btn.style.color = "#606c38";
         }
+    }
 
-        function deletarObra(id) {
-            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
-            banco = banco.filter(o => o.id !== id);
-            localStorage.setItem('banco_literario', JSON.stringify(banco));
-            listarObras();
+    function ajustarAlturaPapel(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+        const papel = document.getElementById('papel-escrita');
+        if (papel) papel.style.height = 'auto';
+    }
+
+    function mudarModoRubrica(modo) {
+        const blocoIA = document.getElementById('bloco-rubrica-ia');
+        const blocoDesenho = document.getElementById('bloco-rubrica-desenho');
+        const tabIA = document.getElementById('tab-ia');
+        const tabDesenho = document.getElementById('tab-desenho');
+        if (modo === 'ia') {
+            blocoIA.style.display = 'block'; blocoDesenho.style.display = 'none';
+            tabIA.style.background = '#fff'; tabIA.style.fontWeight = 'bold'; tabIA.style.color = '#606c38';
+            tabDesenho.style.background = 'transparent'; tabDesenho.style.fontWeight = 'normal'; tabDesenho.style.color = '#7f8c8d';
+        } else {
+            blocoIA.style.display = 'none'; blocoDesenho.style.display = 'block';
+            tabIA.style.background = 'transparent'; tabIA.style.fontWeight = 'normal'; tabIA.style.color = '#7f8c8d';
+            tabDesenho.style.background = '#fff'; tabDesenho.style.fontWeight = 'bold'; tabDesenho.style.color = '#606c38';
+            inicializarCanvasDesenho();
         }
+    }
 
-        // 6. Download Direto (.TXT)
-        function exportarComoTXT() {
-            const tit = document.getElementById('titulo-texto').value.trim() || "Minha Obra";
-            const txt = document.getElementById('corpo-texto').value;
+    function gerarOpcoesRubrica() {
+        const nome = document.getElementById('nome-rubrica').value.trim();
+        const container = document.getElementById('container-rubricas');
+        if (!nome) { alert("Escreva um nome para gerar."); return; }
+        container.innerHTML = "";
+        const estilosHumanos = [
+            { cor: '#0d1b2a', d: "M 12,30 Q 30,5 50,28 T 90,20 T 130,35", loop: "M 15,38 C 60,48 100,22 150,28" },
+            { cor: '#1b4332', d: "M 8,18 Q 45,42 75,8 T 145,22", loop: "M 5,28 L 155,24" }
+        ];
+        estilosHumanos.forEach((opc, i) => {
+            container.innerHTML += `
+                <svg id="ia-signature-${i}" viewBox="0 0 160 50" width="130" height="50" style="background: #fff; border: 1px solid #e9d8a6; cursor: pointer; border-radius: 6px;" onclick="fixarAssinatura('${i}')">
+                    <text x="25" y="30" style="font-style:italic; font-size: 1.1rem;" fill="${opc.cor}">${nome.substring(0,10)}</text>
+                    <path d="${opc.d}" fill="none" stroke="${opc.cor}" stroke-width="1.8"/>
+                    <path d="${opc.loop}" fill="none" stroke="${opc.cor}" stroke-width="1" opacity="0.75"/>
+                </svg>`;
+        });
+    }
 
-            const blob = new Blob([`${tit}\n\n${txt}`], { type: "text/plain;charset=utf-8" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `${tit}.txt`;
-            link.click();
-        }
+    function fixarAssinatura(id) {
+        const escolhida = document.getElementById(`ia-signature-${id}`);
+        if (!escolhida) return;
+        rubricaSelecionadaSVG = escolhida.outerHTML;
+        document.getElementById('rubrica-atual-preview').innerHTML = rubricaSelecionadaSVG;
+        localStorage.setItem('escritorio_rubrica', rubricaSelecionadaSVG);
+    }
 
-        // Carrega as informações ao abrir a página
-        window.onload = function() {
-            listarObras();
-            const salva = localStorage.getItem('escritorio_rubrica');
-            if (salva) {
-                document.getElementById('rubrica-atual-preview').innerHTML = salva;
-            }
-        };
-        // --- AJUSTE AUTOMÁTICO DE ALTURA DO PAPEL ---
-        function ajustarAlturaPapel(textarea) {
-            // Reseta a altura para calcular o tamanho real do texto atual
-            textarea.style.height = 'auto';
-            
-            // Define a nova altura baseada no conteúdo que foi digitado
-            textarea.style.height = textarea.scrollHeight + 'px';
-            
-            // Faz o container do papel acompanhar suavemente o crescimento do textarea
-            const papel = document.getElementById('papel-escrita');
-            if (papel) {
-                papel.style.height = 'auto';
-            }
-        }
-    </script>
+    let d_canvas, d_ctx, desenhando = false;
+    function inicializarCanvasDesenho() {
+        d_canvas = document.getElementById('canvas-desenho');
+        if (!d_canvas) return;
+        d_ctx = d_canvas.getContext('2d');
+        d_canvas.width = d_canvas.parentElement.offsetWidth - 2;
+        d_canvas.height = 100;
+        d_ctx.strokeStyle = '#111111'; d_ctx.lineWidth = 2; d_ctx.lineCap = 'round'; d_ctx.lineJoin = 'round';
+        
+        d_canvas.addEventListener('mousedown', (e) => { desenhando = true; d_ctx.beginPath(); d_ctx.moveTo(e.offsetX, e.offsetY); });
+        d_canvas.addEventListener('mousemove', (e) => { if(desenhando) { d_ctx.lineTo(e.offsetX, e.offsetY); d_ctx.stroke(); } });
+        window.addEventListener('mouseup', () => desenhando = false);
+    }
+
+    function limparCanvasDesenho() { if(d_ctx && d_canvas) d_ctx.clearRect(0, 0, d_canvas.width, d_canvas.height); }
+    
+    function salvarDesenhoComoRubrica() {
+        if (!d_canvas) return;
+        const imgDataURL = d_canvas.toDataURL("image/png");
+        rubricaSelecionadaSVG = `<img src="${imgDataURL}" style="max-height: 50px; width: auto;"/>`;
+        document.getElementById('rubrica-atual-preview').innerHTML = rubricaSelecionadaSVG;
+        localStorage.setItem('escritorio_rubrica', rubricaSelecionadaSVG);
+        alert("Sua rubrica feita à mão foi digitalizada!");
+    }
+
+    function carimbarTexto() {
+        const alvo = document.getElementById('carimbo-area');
+        const cache = rubricaSelecionadaSVG || localStorage.getItem('escritorio_rubrica');
+        if (!cache) { alert("Crie e selecione uma rubrica primeiro!"); return; }
+        alvo.innerHTML = cache; alvo.style.opacity = "0.8"; 
+    }
+
+    function exportarComoTXT() {
+        const tit = document.getElementById('titulo-texto').value.trim() || "Minha Obra";
+        const txt = document.getElementById('corpo-texto').value;
+        const blob = new Blob([`${tit}\n\n${txt}`], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob); link.download = `${tit}.txt`; link.click();
+    }
+
+    // Carrega o banco em tempo real ao abrir a página
+    window.onload = function() {
+        escutarEstanteVirtual(); // Inicia a escuta da nuvem
+        const salva = localStorage.getItem('escritorio_rubrica');
+        if (salva) document.getElementById('rubrica-atual-preview').innerHTML = salva;
+    };
+</script>
 </body>
 </html>
