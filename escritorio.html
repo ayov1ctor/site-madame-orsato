@@ -319,9 +319,19 @@
                 </div>
             </div>
             
-            <div class="rubrica-preview-box" style="margin-top: 20px;">
-                <span style="font-size: 0.85rem; font-weight: bold; color: #606c38;">Sua Assinatura Ativa:</span>
-                <div id="rubrica-atual-preview" style="height: 60px; display: flex; align-items: center; justify-content: center; margin-top: 5px;"></div>
+            <!-- ÁREA DE VISUALIZAÇÃO E EXCLUSÃO DA RUBRICA -->
+            <div style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: rgba(0,0,0,0.02); padding: 12px; border-radius: 6px;">
+                <span style="font-size: 0.85rem; font-family: 'Georgia', serif; color: #606c38; font-weight: bold;">Sua Rubrica Atual:</span>
+                
+                <!-- Caixa onde a assinatura aparece -->
+                <div id="rubrica-atual-preview" style="min-height: 55px; min-width: 130px; border: 1px dashed #b7b7a4; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 4px; padding: 5px;">
+                    <span style="color: #b7b7a4; font-size: 0.8rem; font-style: italic;">Nenhuma criada</span>
+                </div>
+
+                <!-- O NOVO BOTÃO PARA EXCLUIR A RUBRICA ATUAL -->
+                <button onclick="excluirRubricaAtual()" style="background: transparent; border: 1px solid #ff3333; color: #ff3333; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-family: 'Georgia', serif; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,51,51,0.1)'" onmouseout="this.style.background='transparent'">
+                    🗑️ Apagar para criar nova
+                </button>
             </div>
 
             <div style="margin-top: 30px;">
