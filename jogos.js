@@ -266,7 +266,7 @@ function loadAliceStage() {
         progress.innerText = "Fase 2: As Ilusões do Gato de Cheshire 🐱🐾";
         catPathSelected = [];
         zone.innerHTML = `
-            <p style="font-size: 0.95rem; margin-bottom: 15px;">O Gato Sorridente se dividiu em 4 caminhos flutuantes. Três caminhos somem no ar e te jogam no início. Apenas a sequência exata das pegadas revela o caminho real!</p>
+            <p style="font-size: 0.95rem; margin-bottom: 15px;">O Gato de Cheshire se dividiu em 4 caminhos flutuantes. Três caminhos somem no ar e te jogam no início. Apenas a sequência exata das pegadas revela o caminho real!</p>
             <p style="font-size: 0.85rem; color: #ea80fc; font-style: italic; margin-bottom: 15px;">Dica do Sorriso: "O terceiro vem primeiro, o segundo vem por último, e o quarto fica antes do segundo."</p>
             <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <button onclick="chooseCatPath(0)" class="path-btn" style="background: rgba(186, 104, 200, 0.2); width: 100px;">Caminho 1</button>
@@ -292,7 +292,7 @@ function loadAliceStage() {
         zone.style.lineHeight = "1.8";
         zone.innerHTML = `
             <h3 style="color: #ffd700; text-align: center; margin-bottom: 15px;">✨ A História de Amor Além do Espelho ✨</h3>
-            <p>O Coelho Branco correu o mundo inteiro, cruzou os ponteiros do tempo e descobriu que nenhuma engrenagem corre mais rápido do que a batida do meu coração quando te vê. O Gato Sorridente admitiu que todas as suas ilusões e truques perdem a graça perto do brilho real e encantador do seu sorriso.</p>
+            <p>O Coelho Branco correu o mundo inteiro, cruzou os ponteiros do tempo e descobriu que nenhuma engrenagem corre mais rápido do que a batida do meu coração quando te vê. O gato de cheshire admitiu que todas as suas ilusões e truques perdem a graça perto do brilho real e encantador do seu sorriso.</p>
             <p>Seja no País das Maravilhas, no Além de Festa no Céu, ou em qualquer realidade paralela, nosso amor não é um quebra-cabeça confuso ou um jogo de pressa. Ele é o lugar seguro onde o tempo escolhe parar, onde o impossível ganha forma e onde eu escolho estar, todos os dias, segurando a sua mão.</p>
             <p style="text-align: center; font-weight: bold; font-size: 1.2rem; margin-top: 20px; color: #ea80fc;">Obrigado por ser a minha melhor aventura! 🥰💍</p>
         `;

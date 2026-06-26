@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refúgio dos Poemas & Histórias</title>
+    <style>
+        /* Estilo Geral do Ambiente Aconchegante (Tons Champanhe e Café) */
+        body {
+            background-color: #fefae0;
+            color: #4a3e3d;
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 30px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e9d8a6;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #606c38;
+            font-style: italic;
+            margin: 0;
+        }
+
+        .btn-audio {
+            padding: 10px 20px;
+            background-color: #e9d8a6;
+            border: none;
+            color: #606c38;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-voltar {
+            padding: 10px 20px;
+            background-color: #606c38;
+            border: none;
+            color: #fff;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Layout em Painéis */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        /* Painel Esquerdo: Banco Local e IA */
+        .sidebar {
+            background-color: #faedcd;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e9d8a6;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: #606c38;
+            margin-top: 0;
+            border-bottom: 1px solid rgba(96, 108, 56, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .input-text {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d4a373;
+            border-radius: 6px;
+            background: #fff;
+            margin-bottom: 12px;
+            font-family: 'Georgia', serif;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background-color: #606c38;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover { background-color: #4f582f; }
+
+        .rubricas-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .rubrica-preview-box {
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            text-align: center;
+            border: 1px dashed #d4a373;
+        }
+
+        .lista-documentos {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .doc-item {
+            padding: 10px;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #e9d8a6;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Painel Direito: O Papel Digital e Bordas Performáticas */
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .toolbar-papel {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: #faedcd;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9d8a6;
+        }
+
+        .select-borda {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #d4a373;
+            background: #fff;
+            font-family: 'Georgia', serif;
+        }
+
+        .papel-escrita {
+            position: relative;
+            background: #fff;
+            min-height: 480px;
+            padding: 50px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .textarea-poema {
+            width: 100%;
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            font-family: 'Georgia', serif;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #283618;
+            background: transparent;
+        }
+
+        /* Área de Aplicação do Carimbo */
+        .carimbo-area {
+            position: absolute;
+            bottom: 40px;
+            right: 60px;
+            width: 140px;
+            height: 60px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            transform: rotate(-4deg);
+        }
+
+        /* Definição Visual das Bordas Artísticas */
+        .borda-simples { border: 1px solid #d4a373; }
+        .borda-realeza { border: 6px double #d4a373; outline: 2px solid #606c38; outline-offset: -15px; }
+        .borda-vintage { border: 16px solid #faedcd; border-image: radial-gradient(#d4a373 20%, #faedcd 80%) 16; background: #fffcf5 !important; }
+        .borda-poetica { border: 2px dashed #606c38; border-radius: 24px; }
+
+        .botoes-salvamento {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn-footer {
+            padding: 12px 24px;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-footer:active { transform: scale(0.98); }
+
+        /* Estilização para Ocultar Controles na Impressão/PDF */
+        @media print {
+            body { background: #fff; padding: 0; }
+            header, .sidebar, .toolbar-papel, .botoes-salvamento { display: none !important; }
+            .workspace { grid-template-columns: 1fr; }
+            .papel-escrita { box-shadow: none; border: none !important; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="piano-sound" loop src="https://assets.mixkit.co/music/preview/mixkit-ambient-piano-amp-strings-1071.mp3"></audio>
+    <header>
+        <div>
+            <h1>Refúgio dos Poemas & Histórias</h1>
+            <p style="margin: 5px 0 0 0; color: #b7b7a4; font-size: 0.95rem; font-style: italic;">Um lugar calmo para registrar a alma.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button id="btn-music" class="btn-audio" onclick="toggleMusica()">🎵 Ouvir Piano</button>
+            
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 15px;">
+                
+                <svg id="gatinho-escritorio" viewBox="0 0 100 45" width="60" height="32" style="position: absolute; top: -23px; right: 25px; z-index: 10; pointer-events: none; transition: all 0.3s ease;">
+                    <ellipse cx="50" cy="28" rx="28" ry="14" fill="#111" />
+                    <ellipse cx="45" cy="32" rx="16" ry="8" fill="#fff" />
+                    
+                    <ellipse cx="32" cy="38" rx="6" ry="4" fill="#fff" />
+                    <ellipse cx="48" cy="38" rx="6" ry="4" fill="#fff" />
+                    
+                    <circle cx="28" cy="20" r="11" fill="#111" />
+                    <polygon points="24,24 32,24 28,19" fill="#fff" />
+                    <polygon points="27,21 29,21 28,22" fill="#ffb3c1" />
+                    
+                    <path d="M 21,19 Q 23,21 25,19" stroke="#fff" stroke-width="1" fill="none" />
+                    <path d="M 31,19 Q 33,21 35,19" stroke="#fff" stroke-width="1" fill="none" />
+                    
+                    <polygon points="18,14 24,6 26,14" fill="#111" />
+                    <polygon points="20,13 24,8 25,13" fill="#ffb3c1" />
+                    <polygon points="30,13 32,5 38,13" fill="#111" />
+                    <polygon points="32,13 33,7 36,13" fill="#ffb3c1" />
+                    
+                    <g transform="translate(32, 26)">
+                        <polygon points="0,0 -6,-4 -5,3" fill="#e63946" />
+                        <polygon points="0,0 6,-4 5,3" fill="#e63946" />
+                        <circle cx="0" cy="-1" r="2.5" fill="#d62828" />
+                        <path d="M -1,1 L -4,6" stroke="#e63946" stroke-width="1.5" />
+                        <path d="M 1,1 L 3,6" stroke="#e63946" stroke-width="1.5" />
+                    </g>
+                    
+                    <path d="M 76,28 Q 85,24 82,34" stroke="#111" stroke-width="5" stroke-linecap="round" fill="none" />
+                    <path d="M 80,33 L 83,35" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+                </svg>
+
+                <a href="portal.html" class="btn-voltar" style="position: relative; z-index: 5;" onmouseover="document.getElementById('gatinho-escritorio').style.transform='translateY(-3px) scale(1.05)';" onmouseout="document.getElementById('gatinho-escritorio').style.transform='translateY(0) scale(1)';">
+                    🚪 Voltar ao Portal
+                </a>
+            </div>
+        </div>
+    </header>
+    <div class="workspace">
+        
+        <div class="sidebar">
+            <h3 style="color: #606c38; margin-top: 0;">🖋️ Assinatura & Rubrica</h3>
+            
+            <div style="display: flex; gap: 5px; margin-bottom: 15px; background: rgba(0,0,0,0.05); padding: 3px; border-radius: 6px;">
+                <button onclick="mudarModoRubrica('ia')" id="tab-ia" style="flex:1; padding: 6px; border:none; background:#fff; border-radius:4px; font-family:'Georgia',serif; cursor:pointer; font-weight:bold; color:#606c38;">Gerar IA</button>
+                <button onclick="mudarModoRubrica('desenho')" id="tab-desenho" style="flex:1; padding: 6px; border:none; background:transparent; border-radius:4px; font-family:'Georgia',serif; cursor:pointer; color:#7f8c8d;">Desenhar à Mão</button>
+            </div>
+
+            <div id="bloco-rubrica-ia">
+                <p style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 12px;">A IA interpretará seu nome simulando a caligrafia de pessoas reais.</p>
+                <input type="text" id="nome-rubrica" class="input-text" placeholder="Seu nome ou pseudônimo...">
+                <button class="btn-action" onclick="gerarOpcoesRubrica()">Interpretar Traços Humanizados</button>
+                <div id="container-rubricas" class="rubricas-container"></div>
+            </div>
+
+            <div id="bloco-rubrica-desenho" style="display: none;">
+                <p style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 12px;">Use o mouse ou a tela touch para criar seu carimbo autoral:</p>
+                <canvas id="canvas-desenho" style="background: #fff; border: 1px dashed #d4a373; border-radius: 6px; cursor: crosshair; display: block; touch-action: none;"></canvas>
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <button class="btn-action" onclick="limparCanvasDesenho()" style="background-color: #b7b7a4; padding: 6px; font-size: 0.85rem;">Limpar Quadro</button>
+                    <button class="btn-action" onclick="salvarDesenhoComoRubrica()" style="background-color: #bc6c25; padding: 6px; font-size: 0.85rem;">Fixar Desenho</button>
+                </div>
+            </div>
+            
+            <div class="rubrica-preview-box" style="margin-top: 20px;">
+                <span style="font-size: 0.85rem; font-weight: bold; color: #606c38;">Sua Assinatura Ativa:</span>
+                <div id="rubrica-atual-preview" style="height: 60px; display: flex; align-items: center; justify-content: center; margin-top: 5px;"></div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>📚 Textos na Estante</h3>
+                <div id="lista-documentos" class="lista-documentos"></div>
+            </div>
+        </div>
+
+        <div class="editor-container">
+            <div class="toolbar-papel">
+                <label style="font-weight: bold; font-size: 0.95rem; color: #606c38;">Borda Artística:</label>
+                <select id="select-borda" class="select-borda" onchange="mudarEstiloBorda()">
+                    <option value="borda-simples">Margarida Minimalista</option>
+                    <option value="borda-realeza">Realeza Imperial (Linha Dupla)</option>
+                    <option value="borda-vintage">Pergaminho Vintage</option>
+                    <option value="borda-poetica">Tracejado Poético</option>
+                </select>
+
+                <input type="text" id="titulo-texto" class="input-text" placeholder="Título da Obra..." style="margin-bottom: 0; flex-grow: 1;">
+            </div>
+
+            <div id="papel-escrita" class="borda-simples" style="position: relative; background: #fff; min-height: 350px; padding: 40px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; box-sizing: border-box; margin-bottom: 10px;">
+                <textarea id="corpo-texto" class="textarea-poema" oninput="ajustarAlturaPapel(this)" placeholder="Escreva aqui as linhas da sua história..." style="width: 100%; min-height: 250px; max-height: 70vh; border: none; outline: none; resize: none; font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8; color: #283618; background: transparent; overflow-y: auto; box-sizing: border-box;"></textarea>
+                
+                <div id="carimbo-area" class="carimbo-area"></div>
+            </div>                
+                <div id="carimbo-area" class="carimbo-area"></div>
+            </div>
+
+            <div class="botoes-salvamento">
+                <button onclick="carimbarTexto()" class="btn-footer" style="background-color: #bc6c25;">💮 CARIMBAR</button>
+                <button onclick="salvarNoBanco()" class="btn-footer" style="background-color: #283618;">💾 Guardar na Estante</button>
+                <button onclick="exportarComoTXT()" class="btn-footer" style="background-color: #d4a373;">📄 Baixar .TXT</button>
+                <button onclick="window.print()" class="btn-footer" style="background-color: #b7b7a4;">🖨️ Gerar PDF / Imprimir</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let rubricaSelecionadaSVG = "";
+        let musicaTocando = false;
+
+        // 1. Gerenciamento do Áudio de Piano
+        function toggleMusica() {
+            const audio = document.getElementById('piano-sound');
+            const btn = document.getElementById('btn-music');
+            if (!audio) return;
+            
+            if (!musicaTocando) {
+                audio.volume = 0.4; // Define o volume em 40% para ficar bem ambiente e de fundo
+                audio.play().catch(err => console.log("Permissão de áudio pendente."));
+                musicaTocando = true;
+                btn.innerText = "⏸️ Pausar Trilha";
+                btn.style.backgroundColor = "#606c38";
+                btn.style.color = "#fff";
+            } else {
+                audio.pause();
+                musicaTocando = false;
+                btn.innerText = "🎵 Ouvir trilha";
+                btn.style.backgroundColor = "#e9d8a6";
+                btn.style.color = "#606c38";
+            }
+        }
+
+       // --- SISTEMA DE ABAS DA RUBRICA ---
+        function mudarModoRubrica(modo) {
+            const blocoIA = document.getElementById('bloco-rubrica-ia');
+            const blocoDesenho = document.getElementById('bloco-rubrica-desenho');
+            const tabIA = document.getElementById('tab-ia');
+            const tabDesenho = document.getElementById('tab-desenho');
+
+            if (modo === 'ia') {
+                blocoIA.style.display = 'block';
+                blocoDesenho.style.display = 'none';
+                tabIA.style.background = '#fff'; tabIA.style.fontWeight = 'bold'; tabIA.style.color = '#606c38';
+                tabDesenho.style.background = 'transparent'; tabDesenho.style.fontWeight = 'normal'; tabDesenho.style.color = '#7f8c8d';
+            } else {
+                blocoIA.style.display = 'none';
+                blocoDesenho.style.display = 'block';
+                tabIA.style.background = 'transparent'; tabIA.style.fontWeight = 'normal'; tabIA.style.color = '#7f8c8d';
+                tabDesenho.style.background = '#fff'; tabDesenho.style.fontWeight = 'bold'; tabDesenho.style.color = '#606c38';
+                inicializarCanvasDesenho(); // Inicia o quadro negro para desenho
+            }
+        }
+
+        // --- IA GERADORA DE ASSINATURAS HUMANIZADAS ---
+        function gerarOpcoesRubrica() {
+            const nome = document.getElementById('nome-rubrica').value.trim();
+            const container = document.getElementById('container-rubricas');
+            if (!nome) { alert("Escreva um nome para a IA analisar a assinatura."); return; }
+
+            container.innerHTML = "";
+
+            // Simulações de gesticulação manual estável (Estilo assinatura corrida, elegante ou expressiva)
+            const estilosHumanos = [
+                { cor: '#0d1b2a', font: 'font-family: "Great Vibes", "Georgia", serif; font-style: italic;', d: "M 12,30 Q 30,5 50,28 T 90,20 T 130,35", loop: "M 15,38 C 60,48 100,22 150,28" },
+                { cor: '#1b4332', font: 'font-family: "Times New Roman"; font-weight: 300;', d: "M 8,18 Q 45,42 75,8 T 145,22", loop: "M 5,28 L 155,24 M 140,20 L 150,30" },
+                { cor: '#3a0ca3', font: 'font-family: "Courier New"; font-style: italic;', d: "M 15,12 C 40,40 70,-5 110,32", loop: "M 10,42 Q 80,48 145,40" }
+            ];
+
+            estilosHumanos.forEach((opc, i) => {
+                const svgSnippet = `
+                    <svg id="ia-signature-${i}" viewBox="0 0 160 50" width="130" height="50" style="background: #fff; border: 1px solid #e9d8a6; cursor: pointer; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);" onclick="fixarAssinatura('${i}')">
+                        <text x="25" y="30" style="${opc.style} font-size: 1.1rem; letter-spacing: -1px;" fill="${opc.cor}">${nome.substring(0,10)}</text>
+                        <path d="${opc.d}" fill="none" stroke="${opc.cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="${opc.loop}" fill="none" stroke="${opc.cor}" stroke-width="1" opacity="0.75"/>
+                    </svg>
+                `;
+                container.innerHTML += svgSnippet;
+            });
+        }
+
+        // --- MOTOR DA MESA DIGITALIZADORA (CANVAS) ---
+        let d_canvas, d_ctx;
+        let desenhando = false;
+
+        function inicializarCanvasDesenho() {
+            d_canvas = document.getElementById('canvas-desenho');
+            if (!d_canvas) return;
+            
+            d_ctx = d_canvas.getContext('2d');
+            
+            // Ajusta o tamanho interno baseado no display real da barra lateral
+            d_canvas.width = d_canvas.parentElement.offsetWidth - 2;
+            d_canvas.height = 100;
+
+            d_ctx.strokeStyle = '#111111'; // Cor da tinta da caneta
+            d_ctx.lineWidth = 2;
+            d_ctx.lineCap = 'round';
+            d_ctx.lineJoin = 'round';
+
+            // Eventos de Mouse
+            d_canvas.addEventListener('mousedown', (e) => { desenhando = true; d_ctx.beginPath(); d_ctx.moveTo(e.offsetX, e.offsetY); });
+            d_canvas.addEventListener('mousemove', (e) => { if(desenhando) { d_ctx.lineTo(e.offsetX, e.offsetY); d_ctx.stroke(); } });
+            window.addEventListener('mouseup', () => desenhando = false);
+
+            // Eventos Touch (Celular/Tablet)
+            d_canvas.addEventListener('touchstart', (e) => {
+                desenhando = true;
+                const rect = d_canvas.getBoundingClientRect();
+                d_ctx.beginPath();
+                d_ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+            });
+            d_canvas.addEventListener('touchmove', (e) => {
+                if(!desenhando) return;
+                const rect = d_canvas.getBoundingClientRect();
+                d_ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+                d_ctx.stroke();
+            });
+            d_canvas.addEventListener('touchend', () => desenhando = false);
+        }
+
+        function limparCanvasDesenho() {
+            if(d_ctx && d_canvas) d_ctx.clearRect(0, 0, d_canvas.width, d_canvas.height);
+        }
+
+        function salvarDesenhoComoRubrica() {
+            if (!d_canvas) return;
+            
+            // Converte a área desenhada em uma imagem PNG transparente
+            const imgDataURL = d_canvas.toDataURL("image/png");
+            
+            // Monta a tag de exibição da rubrica ativa
+            rubricaSelecionadaSVG = `<img src="${imgDataURL}" style="max-height: 50px; width: auto; object-fit: contain;"/>`;
+            
+            document.getElementById('rubrica-atual-preview').innerHTML = rubricaSelecionadaSVG;
+            localStorage.setItem('escritorio_rubrica', rubricaSelecionadaSVG);
+            alert("Sua rubrica feita à mão foi digitalizada e salva!");
+        }
+
+        function fixarAssinatura(id) {
+            const escolhida = document.getElementById(`ia-signature-${id}`);
+            if (!escolhida) return;
+
+            rubricaSelecionadaSVG = escolhida.outerHTML;
+            document.getElementById('rubrica-atual-preview').innerHTML = rubricaSelecionadaSVG;
+            
+            // Armazena no banco de dados local
+            localStorage.setItem('escritorio_rubrica', rubricaSelecionadaSVG);
+        }
+
+        // 3. Aplicação de Molduras
+        function mudarEstiloBorda() {
+            const select = document.getElementById('select-borda');
+            document.getElementById('papel-escrita').className = select.value;
+        }
+
+        // 4. Mecânica de Carimbar
+        function carimbarTexto() {
+            const alvo = document.getElementById('carimbo-area');
+            const cache = rubricaSelecionadaSVG || localStorage.getItem('escritorio_rubrica');
+
+            if (!cache) {
+                alert("Gere e selecione uma rubrica no painel esquerdo primeiro!");
+                return;
+            }
+
+            alvo.innerHTML = cache;
+            alvo.style.opacity = "0.8"; 
+        }
+
+        // 5. Banco de Dados Local (Estante de Documentos)
+        function salvarNoBanco() {
+            const titulo = document.getElementById('titulo-texto').value.trim() || "Poema sem Nome";
+            const corpo = document.getElementById('corpo-texto').value;
+            const carimbado = document.getElementById('carimbo-area').style.opacity === "0.8";
+
+            if (!corpo) { alert("Escreva algo no papel antes de guardar."); return; }
+
+            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
+            
+            banco.push({
+                id: Date.now(),
+                titulo: titulo,
+                corpo: corpo,
+                carimbado: carimbado
+            });
+
+            localStorage.setItem('banco_literario', JSON.stringify(banco));
+            alert("Sua obra foi armazenada com sucesso na estante virtual!");
+            listarObras();
+        }
+
+        function listarObras() {
+            const painel = document.getElementById('lista-documentos');
+            painel.innerHTML = "";
+
+            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
+
+            if (banco.length === 0) {
+                painel.innerHTML = `<span style="color: #b7b7a4; font-size: 0.9rem; font-style: italic;">Nenhum livro salvo...</span>`;
+                return;
+            }
+
+            banco.forEach(ob => {
+                const box = document.createElement('div');
+                box.className = 'doc-item';
+                box.innerHTML = `
+                    <span style="font-weight: bold; color: #283618; cursor: pointer;" onclick="abrirObra(${ob.id})">📖 ${ob.titulo}</span>
+                    <span style="color: #ff3333; cursor: pointer; font-size: 0.9rem;" onclick="deletarObra(${ob.id})">❌</span>
+                `;
+                painel.appendChild(box);
+            });
+        }
+
+        function abrirObra(id) {
+            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
+            const obra = banco.find(o => o.id === id);
+            if (!obra) return;
+
+            document.getElementById('titulo-texto').value = obra.titulo;
+            
+            const txtArea = document.getElementById('corpo-texto');
+            txtArea.value = obra.corpo;
+
+            if (obra.carimbado) {
+                carimbarTexto();
+            } else {
+                document.getElementById('carimbo-area').style.opacity = "0";
+            }
+
+            // FORÇA O PAPEL A CRESCER AO ABRIR UM TEXTO SALVO:
+            ajustarAlturaPapel(txtArea);
+        }
+
+        function deletarObra(id) {
+            let banco = JSON.parse(localStorage.getItem('banco_literario')) || [];
+            banco = banco.filter(o => o.id !== id);
+            localStorage.setItem('banco_literario', JSON.stringify(banco));
+            listarObras();
+        }
+
+        // 6. Download Direto (.TXT)
+        function exportarComoTXT() {
+            const tit = document.getElementById('titulo-texto').value.trim() || "Minha Obra";
+            const txt = document.getElementById('corpo-texto').value;
+
+            const blob = new Blob([`${tit}\n\n${txt}`], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `${tit}.txt`;
+            link.click();
+        }
+
+        // Carrega as informações ao abrir a página
+        window.onload = function() {
+            listarObras();
+            const salva = localStorage.getItem('escritorio_rubrica');
+            if (salva) {
+                document.getElementById('rubrica-atual-preview').innerHTML = salva;
+            }
+        };
+        // --- AJUSTE AUTOMÁTICO DE ALTURA DO PAPEL ---
+        function ajustarAlturaPapel(textarea) {
+            // Reseta a altura para calcular o tamanho real do texto atual
+            textarea.style.height = 'auto';
+            
+            // Define a nova altura baseada no conteúdo que foi digitado
+            textarea.style.height = textarea.scrollHeight + 'px';
+            
+            // Faz o container do papel acompanhar suavemente o crescimento do textarea
+            const papel = document.getElementById('papel-escrita');
+            if (papel) {
+                papel.style.height = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>

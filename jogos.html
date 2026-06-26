@@ -284,9 +284,6 @@
             </div>
         </section>
 
-        <!-- VOLTAR -->
-        <center>
-            <a href="index.html" class="back-link">← Voltar para a Página Inicial</a>
         </center>
         <section class="game-box" id="enigma-alice-section" style="border: 2px solid #ba68c8; background: rgba(186, 104, 200, 0.03);">
         <section class="game-box" id="enigma-alice-section" style="border: 2px solid #ba68c8; background: rgba(186, 104, 200, 0.03); position: relative;">
@@ -368,6 +365,108 @@
                     </g>
                 </svg>
             </div>
+<<div id="floating-portal-container" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; font-family: monospace; display: flex; align-items: flex-end; gap: 10px;">
+    
+    <div id="portal-confirm-box" style="display: none; background: rgba(15, 15, 27, 0.95); border: 1px solid #00e5ff; padding: 10px 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); align-items: center; gap: 10px; animation: fadeInButton 0.3s ease; margin-bottom: 5px;">
+        <span style="color: #fff; font-size: 0.9rem; white-space: nowrap;">Deseja voltar ao portal?</span>
+        <a href="portal.html" style="color: #00e5ff; font-weight: bold; text-decoration: none; padding: 3px 8px; border: 1px solid #00e5ff; border-radius: 4px; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,229,255,0.2)'" onmouseout="this.style.background='transparent'">Sim</a>
+        <button onclick="togglePortalConfirm()" style="background: transparent; border: 1px solid #ff3333; color: #ff3333; padding: 3px 8px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; font-family: monospace; font-weight: bold; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,51,51,0.2)'" onmouseout="this.style.background='transparent'">Não</button>
+    </div>
 
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+        
+        <svg id="gatinho-enfeite" viewBox="0 0 100 45" width="65" height="35" style="position: absolute; top: -25px; z-index: 10000; pointer-events: none; transition: all 0.3s ease;">
+            <ellipse cx="50" cy="28" rx="28" ry="14" fill="#111" />
+            <ellipse cx="45" cy="32" rx="16" ry="8" fill="#fff" />
+            
+            <ellipse cx="32" cy="38" rx="6" ry="4" fill="#fff" />
+            <ellipse cx="48" cy="38" rx="6" ry="4" fill="#fff" />
+            
+            <circle cx="28" cy="20" r="11" fill="#111" />
+            <polygon points="24,24 32,24 28,19" fill="#fff" />
+            <polygon points="27,21 29,21 28,22" fill="#ffb3c1" />
+            
+            <path d="M 21,19 Q 23,21 25,19" stroke="#fff" stroke-width="1" fill="none" />
+            <path d="M 31,19 Q 33,21 35,19" stroke="#fff" stroke-width="1" fill="none" />
+            
+            <polygon points="18,14 24,6 26,14" fill="#111" />
+            <polygon points="20,13 24,8 25,13" fill="#ffb3c1" />
+            <polygon points="30,13 32,5 38,13" fill="#111" />
+            <polygon points="32,13 33,7 36,13" fill="#ffb3c1" />
+            
+            <g transform="translate(32, 26)">
+                <polygon points="0,0 -6,-4 -5,3" fill="#e63946" />
+                <polygon points="0,0 6,-4 5,3" fill="#e63946" />
+                <circle cx="0" cy="-1" r="2.5" fill="#d62828" />
+                <path d="M -1,1 L -4,6" stroke="#e63946" stroke-width="1.5" />
+                <path d="M 1,1 L 3,6" stroke="#e63946" stroke-width="1.5" />
+            </g>
+            
+            <path d="M 76,28 Q 85,24 82,34" stroke="#111" stroke-width="5" stroke-linecap="round" fill="none" />
+            <path d="M 80,33 L 83,35" stroke="#fff" stroke-width="4" stroke-linecap="round" /> </svg>
+
+        <button id="btn-floating-trigger" onclick="togglePortalConfirm()" style="width: 48px; height: 48px; background: rgba(0, 0, 0, 0.85); border: 2px solid #00e5ff; border-radius: 50%; color: #00e5ff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); transition: all 0.3s ease; outline: none; padding: 0; margin-top: 5px;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 15px #00e5ff'; document.getElementById('gatinho-enfeite').style.transform='translateY(-2px) scale(1.03)';" onmouseout="this.style.transform='scale(1)'; document.getElementById('gatinho-enfeite').style.transform='translateY(0) scale(1)';">
+             🚪
+        </button>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeInButton {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+</style>
+
+<script>
+    function togglePortalConfirm() {
+        const confirmBox = document.getElementById('portal-confirm-box');
+        const triggerBtn = document.getElementById('btn-floating-trigger');
+        
+        if (confirmBox.style.display === 'none' || confirmBox.style.display === '') {
+            confirmBox.style.display = 'flex';
+            triggerBtn.innerHTML = '✕'; // Transforma o ícone em fechar
+            triggerBtn.style.borderColor = '#ff3333';
+            triggerBtn.style.color = '#ff3333';
+        } else {
+            confirmBox.style.display = 'none';
+            triggerBtn.innerHTML = '🚪'; // Restaura a portinha
+            triggerBtn.style.borderColor = '#00e5ff';
+            triggerBtn.style.color = '#00e5ff';
+        }
+    }
+</script>
+
+    <button id="btn-floating-trigger" onclick="togglePortalConfirm()" style="width: 45px; height: 45px; background: rgba(0, 0, 0, 0.7); border: 2px solid #00e5ff; border-radius: 50%; color: #00e5ff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); transition: all 0.3s ease; outline: none; padding: 0;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 0 15px #00e5ff'" onmouseout="this.style.transform='scale(1)'">
+        🚪
+    </button>
+</div>
+
+<style>
+    @keyframes fadeInButton {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+</style>
+
+<script>
+    // Função simples para abrir/fechar a caixinha de confirmação do botão fixo
+    function togglePortalConfirm() {
+        const confirmBox = document.getElementById('portal-confirm-box');
+        const triggerBtn = document.getElementById('btn-floating-trigger');
+        
+        if (confirmBox.style.display === 'none' || confirmBox.style.display === '') {
+            confirmBox.style.display = 'flex';
+            triggerBtn.innerText = '✕'; // Muda o ícone para fechar
+            triggerBtn.style.borderColor = '#ff3333';
+            triggerBtn.style.color = '#ff3333';
+        } else {
+            confirmBox.style.display = 'none';
+            triggerBtn.innerText = '🚪'; // Volta ao ícone de portinha
+            triggerBtn.style.borderColor = '#00e5ff';
+            triggerBtn.style.color = '#00e5ff';
+        }
+    }
+</script>
 </body>
 </html>
